@@ -4,14 +4,12 @@ from datetime import datetime
 
 class Batch(object):
 
-    __slots__ = ('data', 'source', 'extraction', 'name')
+    __slots__ = ('data', 'meta')
 
-    def __init__(self, data, source: str, extraction: datetime, name: str = 'unnamed'):
+    def __init__(self, batch):
 
-        self.data = data
-        self.source = source
-        self.extraction = extraction
-        self.name = name
+        self.data = batch['data']
+        self.meta = batch['metadata']
 
     def persist(self, uri):
         pass
