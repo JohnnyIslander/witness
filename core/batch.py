@@ -9,7 +9,7 @@ class Batch(object):
     def __init__(self, batch):
 
         self.data = batch['data']
-        self.meta = batch['metadata']
+        self.meta = batch['meta']
 
     def persist(self, uri):
         pass
