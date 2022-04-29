@@ -11,9 +11,10 @@ class Extractor(object):
         self.name = 'unnamed'
         self.extraction_timestamp: datetime or None = None
 
-        batch: dict[dict, ]
+        data: dict
 
     def extract(self):
         pass
+
 
 

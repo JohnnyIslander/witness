@@ -6,10 +6,10 @@ class Batch(object):
 
     __slots__ = ('data', 'meta')
 
-    def __init__(self, batch):
+    def __init__(self, src: dict):
 
-        self.data = batch['data']
-        self.meta = batch['meta']
+        self.data: list = src['data']
+        self.meta: dict = src['meta']
 
     def persist(self, uri):
         pass
