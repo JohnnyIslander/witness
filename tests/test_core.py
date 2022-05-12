@@ -6,7 +6,7 @@ xfail = pytest.mark.xfail
 parametrize = pytest.mark.parametrize
 
 mock_src = {
-            'data': [],
+            'batch': [],
             'meta': {}
         }
 

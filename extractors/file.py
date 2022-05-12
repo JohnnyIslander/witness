@@ -1,10 +1,13 @@
 
-from extractors.basic import Extractor
+from extractors.abstract import FileExtractor
 
 
-class ExcelFileExtractor(Extractor):
+class ExcelFileExtractor(FileExtractor):
 
-    def extract(self) -> dict:
+    def _set_extraction_timestamp(self):
+        pass
+
+    def extract(self):
         pass
 
 

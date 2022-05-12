@@ -1,6 +1,6 @@
 
 import pytest
-from extractors.basic import Extractor
+from extractors.file import ExcelFileExtractor
 xfail = pytest.mark.xfail
 parametrize = pytest.mark.parametrize
 
@@ -10,14 +10,14 @@ mock_params = {
 }
 
 
-correct_extractor = Extractor(uri=mock_uri, params=mock_params)
+correct_extractor = ExcelFileExtractor(uri=mock_uri, params=mock_params)
 
 
 @parametrize('args', [
     (mock_uri, mock_params)
 ])
 def test_create_extractor_success(args):
-    new_extractor = Extractor(*args)
+    new_extractor = ExcelFileExtractor(*args)
     return new_extractor
 
 
@@ -28,7 +28,7 @@ def test_create_extractor_success(args):
     ()
 ])
 def test_create_extractor_fail(args):
-    new_extractor = Extractor(*args)
+    new_extractor = ExcelFileExtractor(*args)
     return new_extractor
 
 
