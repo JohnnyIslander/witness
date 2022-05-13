@@ -23,36 +23,28 @@ class ODBCExtractor(DatabaseExtractor):
 
         connector = connect(self.connection_string)
         cursor = connector.cursor()
-        records = cursor.execute(self.query).fetchall()
-        description = cursor.description
+        rows = cursor.execute(self.query).fetchall()
 
         self._set_extraction_timestamp()
-        self.output = {'description': description, 'records': records}
+        self.output = {'description': cursor.description, 'rows': rows}
 
         return self
 
     def unify(self):
 
         description = self.output['description']
-        records = self.output['records']
-
-        data = []
+        rows = self.output['rows']
         col_names = [col[0] for col in description]
-
-        for record in records:
-            raw = {}
-            for i, value in enumerate(record):
-                raw[col_names[i]] = value
-            data.append(raw)
-
-        meta = {}
         dtypes = [col[1] for col in description]
-        source_dtypes = {}
-        for i, value in enumerate(dtypes):
-            source_dtypes[col_names[i]] = value
+        source_dtypes = {col_names[i]: dtype for i, dtype in enumerate(dtypes)}
 
-        meta['extraction_timestamp'] = self.extraction_timestamp
-        meta['source_dtypes'] = source_dtypes
+        def build_record(names, row):
+            record = {names[i]: value for i, value in enumerate(row)}
+            return record
+
+        data = [build_record(col_names, row) for row in rows]
+        meta = {'extraction_timestamp': self.extraction_timestamp,
+                'source_dtypes': source_dtypes}
 
         setattr(self, 'output', {'meta': meta, 'data': data})
 
