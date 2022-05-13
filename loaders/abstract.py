@@ -6,10 +6,10 @@ class AbstractLoader(metaclass=ABCMeta):
 
     def __init__(self):
 
-        self.input = None
+        self.output = None
 
     @abstractmethod
-    def prepare(self):
+    def prepare(self, batch):
         raise NotImplementedError
 
     @abstractmethod
@@ -22,7 +22,7 @@ class DatabaseLoader(AbstractLoader):
     def __init__(self):
         super().__init__()
 
-    def prepare(self):
+    def prepare(self, batch):
         pass
 
     def load(self):

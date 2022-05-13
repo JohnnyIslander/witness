@@ -1,20 +1,22 @@
 
 import pytest
 from core.batch import Batch
+from tests.mock import batch
 
 xfail = pytest.mark.xfail
 parametrize = pytest.mark.parametrize
 
-mock_src = {
-            'batch': [],
-            'meta': {}
-        }
+# region Mock
 
-mock_batch = Batch(mock_src)
+mock_struct_empty = batch.struct_empty
 
+mock_batch = Batch(batch.struct_full)
+
+# endregion Mock
 
 @parametrize('args', [
-    (mock_src, )
+    (batch.struct_empty,),
+    (batch.struct_full,)
 ])
 def test_create_batch(args):
     new_batch = Batch(*args)
@@ -26,14 +28,8 @@ def test_set_new_attr():
     mock_batch.some_attribute = 'test'
 
 
-def test_batch_meta_is_dict():
-    new_batch = Batch(mock_src)
-    isinstance(new_batch.meta, dict)
-
-
-def test_batch_data_is_list():
-    new_batch = Batch(mock_src)
-    isinstance(new_batch.data, list)
+def test_batch_load():
+    mock_batch.load()
 
 
 if __name__ == '__main__':

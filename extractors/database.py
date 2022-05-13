@@ -18,6 +18,9 @@ class ODBCExtractor(DatabaseExtractor):
         from datetime import datetime
         setattr(self, 'extraction_timestamp', datetime.now())
 
+    def _set_record_source(self):
+        setattr(self, 'record_source', self.connection_string)
+
     def extract(self):
         from pyodbc import connect
 
@@ -25,8 +28,8 @@ class ODBCExtractor(DatabaseExtractor):
         cursor = connector.cursor()
         rows = cursor.execute(self.query).fetchall()
 
-        self._set_extraction_timestamp()
         self.output = {'description': cursor.description, 'rows': rows}
+        super().extract()
 
         return self
 
@@ -44,6 +47,7 @@ class ODBCExtractor(DatabaseExtractor):
 
         data = [build_record(col_names, row) for row in rows]
         meta = {'extraction_timestamp': self.extraction_timestamp,
+                'record_source': self.record_source,
                 'source_dtypes': source_dtypes}
 
         setattr(self, 'output', {'meta': meta, 'data': data})

@@ -2,14 +2,14 @@
 from datetime import datetime
 
 
-class Batch(object):
+class Batch:
 
     __slots__ = ('data', 'meta')
 
-    def __init__(self, src: dict):
+    def __init__(self, struct: dict):
 
-        self.data: list = src['data']
-        self.meta: dict = src['meta']
+        self.data: list = struct['data']
+        self.meta: dict = struct['meta']
 
     def persist(self, uri):
         pass
