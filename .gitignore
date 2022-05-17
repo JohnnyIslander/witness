@@ -49,3 +49,4 @@ dmypy.json
 # Custom
 temp/
 logs/
+mock/
