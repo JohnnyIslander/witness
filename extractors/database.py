@@ -1,5 +1,5 @@
 
-from extractors.abstract import DatabaseExtractor
+from extractors.basic import DatabaseExtractor
 
 
 def is_select(q: str) -> bool:

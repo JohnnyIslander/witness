@@ -1,18 +1,27 @@
 
 from datetime import datetime
+from core.abstract import AbstractBatch
 
 
-class Batch:
+class Batch(AbstractBatch):
 
     __slots__ = ('data', 'meta')
 
-    def __init__(self, struct: dict):
+    def __init__(self):
 
-        self.data: list = struct['data']
-        self.meta: dict = struct['meta']
+        self.data: list = []
+        self.meta: dict = {}
+
+    def fill(self, extractor):
+        output = extractor.extract().unify().output
+        setattr(self, 'data', output['data'])
+        setattr(self, 'meta', output['meta'])
+
+    def push(self, loader):
+        loader.prepare(self).load()
 
     def persist(self, uri):
-        pass
+        raise NotImplementedError
 
     def restore(self, uri):
-        pass
+        raise NotImplementedError

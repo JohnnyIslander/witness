@@ -1,5 +1,5 @@
 
-from extractors.abstract import FileExtractor
+from extractors.basic import FileExtractor
 
 
 class ExcelFileExtractor(FileExtractor):
