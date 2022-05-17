@@ -1,9 +1,13 @@
 
-from datetime import datetime
 from core.abstract import AbstractBatch
 
 
 class Batch(AbstractBatch):
+    """
+    Central class of entire lib.
+    Able to store standardized data structure
+    containing data in form of records and metadata dictionary.
+    """
 
     __slots__ = ('data', 'meta')
 
