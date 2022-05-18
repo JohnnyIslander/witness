@@ -1,4 +1,7 @@
 
+#  Copyright (c) 2022. Eugene Popov
+#  All rights reserved.
+
 import pytest
 from loaders.pandas import PandasSQLLoader
 from tests.core.batch import mock_batch

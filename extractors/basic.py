@@ -1,3 +1,6 @@
+#  Copyright (c) 2022. Eugene Popov
+#  All rights reserved.
+
 from datetime import datetime
 from core.abstract import AbstractExtractor
 

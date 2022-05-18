@@ -1,4 +1,7 @@
 
+#  Copyright (c) 2022. Eugene Popov
+#  All rights reserved.
+
 from core.abstract import AbstractBatch
 
 

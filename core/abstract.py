@@ -1,4 +1,7 @@
 
+#  Copyright (c) 2022. Eugene Popov
+#  All rights reserved.
+
 from abc import ABCMeta, abstractmethod
 from datetime import datetime
 

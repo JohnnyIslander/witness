@@ -1,4 +1,7 @@
 
+#  Copyright (c) 2022. Eugene Popov
+#  All rights reserved.
+
 import pytest
 from core.batch import Batch
 from tests.mock import batch
