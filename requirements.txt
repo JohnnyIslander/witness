@@ -8,3 +8,5 @@ requests==2.27.1
 pyodbc==4.0.32
 pytest==7.1.2
 pyyaml==6.0
+pyarrow==8.0.0
+openpyxl==3.0.9
