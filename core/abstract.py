@@ -39,7 +39,7 @@ class AbstractExtractor(metaclass=ABCMeta):
 
 class AbstractLoader(metaclass=ABCMeta):
 
-    def __init__(self):
+    def __init__(self, **kwargs):
 
         self.output = None
 

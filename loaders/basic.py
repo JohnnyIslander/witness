@@ -3,8 +3,8 @@ from core.abstract import AbstractLoader
 
 class DatabaseLoader(AbstractLoader):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
     def prepare(self, batch):
         raise NotImplementedError
@@ -15,9 +15,9 @@ class DatabaseLoader(AbstractLoader):
 
 class FileLoader(AbstractLoader):
 
-    def __init__(self, uri):
-        super().__init__()
+    def __init__(self, uri, **kwargs):
         self.uri: str = uri
+        super().__init__(**kwargs)
 
     def prepare(self, batch):
         raise NotImplementedError
