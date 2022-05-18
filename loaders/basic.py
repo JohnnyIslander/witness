@@ -7,19 +7,20 @@ class DatabaseLoader(AbstractLoader):
         super().__init__()
 
     def prepare(self, batch):
-        pass
+        raise NotImplementedError
 
     def load(self):
-        pass
+        raise NotImplementedError
 
 
 class FileLoader(AbstractLoader):
 
-    def __init__(self):
+    def __init__(self, uri):
         super().__init__()
+        self.uri: str = uri
 
     def prepare(self, batch):
-        pass
+        raise NotImplementedError
 
     def load(self):
-        pass
+        raise NotImplementedError

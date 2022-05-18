@@ -1,4 +1,4 @@
 
-from batch import Batch
+from core.batch import Batch
 
 

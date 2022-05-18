@@ -20,9 +20,11 @@ class Batch(AbstractBatch):
         output = extractor.extract().unify().output
         setattr(self, 'data', output['data'])
         setattr(self, 'meta', output['meta'])
+        return self
 
     def push(self, loader):
         loader.prepare(self).load()
+        return self
 
     def persist(self, uri):
         raise NotImplementedError
