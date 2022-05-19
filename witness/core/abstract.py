@@ -18,7 +18,6 @@ from datetime import datetime
 
 
 class AbstractBatch(metaclass=ABCMeta):
-
     @abstractmethod
     def fill(self, extractor):
         raise NotImplemented
@@ -29,7 +28,7 @@ class AbstractBatch(metaclass=ABCMeta):
 
 
 class AbstractExtractor(metaclass=ABCMeta):
-    def __init__(self):
+    def __init__(self, **kwargs):
         self.extraction_timestamp: datetime or None = None
         self.record_source = None
         self.output = None

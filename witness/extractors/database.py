@@ -22,11 +22,10 @@ def is_select(q: str) -> bool:
 
 class ODBCExtractor(DatabaseExtractor):
 
-    def __init__(self, connection_string: str, query: str):
-
-        super().__init__()
+    def __init__(self, connection_string: str, query: str, **kwargs):
         self.connection_string: str = connection_string
         self.query: str = query if isinstance(query, str) and is_select(query) else None
+        super().__init__(**kwargs)
 
     def _set_extraction_timestamp(self):
         from datetime import datetime

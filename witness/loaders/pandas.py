@@ -68,6 +68,7 @@ class PandasExcelLoader(PandasLoader, FileLoader):
             excel_writer=self.uri,
             sheet_name=self.sheet_name
         )
+        return self
 
 
 class PandasFeatherLoader(PandasLoader, FileLoader):
@@ -77,3 +78,4 @@ class PandasFeatherLoader(PandasLoader, FileLoader):
 
     def load(self):
         self.output.to_feather(self.uri)
+        return self
