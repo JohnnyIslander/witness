@@ -15,7 +15,11 @@
 
 from witness.core.abstract import AbstractLoader
 from witness.loaders.basic import FileLoader
+import logging
 import pandas as pd
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 
 class PandasLoader(AbstractLoader):
@@ -25,8 +29,16 @@ class PandasLoader(AbstractLoader):
 
     def prepare(self, batch):
         df = pd.DataFrame(batch.data, dtype='str')
-        df['extraction_timestamp'] = batch.meta['extraction_timestamp']
-        df['record_source'] = batch.meta['record_source']
+        if 'extraction_timestamp' not in df.columns:
+            df['extraction_timestamp'] = batch.meta['extraction_timestamp']
+        else:
+            logger.warning('Dataset already contains "extraction_timestamp"')
+
+        if 'record_source' not in df.columns:
+            df['record_source'] = batch.meta['record_source']
+        else:
+            logger.warning('Dataset already contains "record_source"')
+
         self.output = df
         return self
 

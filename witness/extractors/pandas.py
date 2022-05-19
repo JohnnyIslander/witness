@@ -39,10 +39,7 @@ class PandasExtractor(AbstractExtractor):
 
     def unify(self):
 
-        data = self.output.to_json(orient='records',
-                                   force_ascii=False,
-                                   date_format='iso',
-                                   date_unit='us')
+        data = self.output.to_dict(orient='records')
         meta = {'extraction_timestamp': self.extraction_timestamp,
                 'record_source': self.record_source}
 
