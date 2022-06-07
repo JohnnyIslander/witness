@@ -30,6 +30,7 @@ class AbstractBatch(metaclass=ABCMeta):
 class AbstractExtractor(metaclass=ABCMeta):
     def __init__(self, **kwargs):
         self.extraction_timestamp: datetime or None = None
+        # TODO: record_source is arguably the attribute of the data, not the extractor
         self.record_source = None
         self.output = None
 
