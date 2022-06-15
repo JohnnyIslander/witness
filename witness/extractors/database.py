@@ -12,18 +12,34 @@
 #     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
+from datetime import datetime
 
-from witness.extractors.basic import DatabaseExtractor
+from witness.core.abstract import AbstractExtractor
 
 
 def is_select(q: str) -> bool:
     return True if 'select' in str.lower(q) else False
 
 
+class DatabaseExtractor(AbstractExtractor):
+
+    def __init__(self, uri, **kwargs):
+        super().__init__(uri)
+
+    def _set_extraction_timestamp(self):
+        setattr(self, 'extraction_timestamp', datetime.now())
+
+    def extract(self):
+        self._set_extraction_timestamp()
+
+    def unify(self):
+        raise NotImplementedError
+
+
 class ODBCExtractor(DatabaseExtractor):
 
-    def __init__(self, connection_string: str, query: str, **kwargs):
-        self.connection_string: str = connection_string
+    def __init__(self, uri: str, query: str, **kwargs):
+        self.uri: str = uri
         self.query: str = query if isinstance(query, str) and is_select(query) else None
         super().__init__(**kwargs)
 
@@ -31,13 +47,10 @@ class ODBCExtractor(DatabaseExtractor):
         from datetime import datetime
         setattr(self, 'extraction_timestamp', datetime.now())
 
-    def _set_record_source(self):
-        setattr(self, 'record_source', self.connection_string)
-
     def extract(self):
         from pyodbc import connect
 
-        connector = connect(self.connection_string)
+        connector = connect(self.uri)
         cursor = connector.cursor()
         rows = cursor.execute(self.query).fetchall()
 
@@ -60,7 +73,7 @@ class ODBCExtractor(DatabaseExtractor):
 
         data = [build_record(col_names, row) for row in rows]
         meta = {'extraction_timestamp': self.extraction_timestamp,
-                'record_source': self.record_source,
+                'record_source': self.uri,
                 'source_dtypes': source_dtypes}
 
         setattr(self, 'output', {'meta': meta, 'data': data})

@@ -12,8 +12,22 @@
 #     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
+from datetime import datetime
 
-from witness.extractors.basic import FileExtractor
+from witness.core.abstract import AbstractExtractor
+
+
+class FileExtractor(AbstractExtractor):
+
+    def _set_extraction_timestamp(self):
+        setattr(self, 'extraction_timestamp', datetime.now())
+
+    def extract(self):
+        self._set_extraction_timestamp()
+        self._set_record_source()
+
+    def unify(self):
+        raise NotImplementedError
 
 
 class ExcelFileExtractor(FileExtractor):

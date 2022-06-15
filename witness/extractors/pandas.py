@@ -14,7 +14,6 @@
 #     limitations under the License.
 
 from witness.core.abstract import AbstractExtractor
-from witness.extractors.basic import FileExtractor
 from datetime import datetime
 import pandas as pd
 
@@ -24,24 +23,20 @@ class PandasExtractor(AbstractExtractor):
     Basic pandas extractor class.
     Provides a single 'unify' method for all child pandas extractors.
     """
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, uri, **kwargs):
+        super().__init__(uri)
 
     def _set_extraction_timestamp(self):
         setattr(self, 'extraction_timestamp', datetime.now())
 
-    def _set_record_source(self):
-        raise NotImplementedError
-
     def extract(self):
         self._set_extraction_timestamp()
-        self._set_record_source()
 
     def unify(self):
 
         data = self.output.to_dict(orient='records')
         meta = {'extraction_timestamp': self.extraction_timestamp,
-                'record_source': self.record_source}
+                'record_source': self.uri}
 
         setattr(self, 'output', {'meta': meta, 'data': data})
 
@@ -52,10 +47,7 @@ class PandasFeatherExtractor(PandasExtractor):
 
     def __init__(self, uri, **kwargs):
         self.uri: str = uri
-        super().__init__(**kwargs)
-
-    def _set_record_source(self):
-        setattr(self, 'record_source', self.uri)
+        super().__init__(uri, **kwargs)
 
     def extract(self):
         df = pd.read_feather(self.uri)

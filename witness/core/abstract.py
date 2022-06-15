@@ -13,11 +13,13 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
 
+from __future__ import annotations
 from abc import ABCMeta, abstractmethod
 from datetime import datetime
 
 
 class AbstractBatch(metaclass=ABCMeta):
+
     @abstractmethod
     def fill(self, extractor):
         raise NotImplemented
@@ -28,18 +30,15 @@ class AbstractBatch(metaclass=ABCMeta):
 
 
 class AbstractExtractor(metaclass=ABCMeta):
-    def __init__(self, **kwargs):
-        self.extraction_timestamp: datetime or None = None
-        # TODO: record_source is arguably the attribute of the data, not the extractor
-        self.record_source = None
+
+    def __init__(self, uri=None):
+
+        self.uri = uri
         self.output = None
+        self.extraction_timestamp: datetime | None = None
 
     @abstractmethod
     def _set_extraction_timestamp(self):
-        raise NotImplementedError
-
-    @abstractmethod
-    def _set_record_source(self):
         raise NotImplementedError
 
     @abstractmethod
@@ -53,8 +52,9 @@ class AbstractExtractor(metaclass=ABCMeta):
 
 class AbstractLoader(metaclass=ABCMeta):
 
-    def __init__(self, **kwargs):
+    def __init__(self, uri=None):
 
+        self.uri = uri
         self.output = None
 
     @abstractmethod
