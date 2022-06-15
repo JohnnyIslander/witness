@@ -14,7 +14,6 @@
 #     limitations under the License.
 
 from witness.core.abstract import AbstractLoader
-from witness.loaders.basic import FileLoader
 import logging
 import pandas as pd
 
@@ -24,8 +23,8 @@ logger.setLevel(logging.DEBUG)
 
 class PandasLoader(AbstractLoader):
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, uri):
+        super().__init__(uri)
 
     def prepare(self, batch):
         df = pd.DataFrame(batch.data, dtype='str')
@@ -55,10 +54,12 @@ class PandasSQLLoader(PandasLoader):
     :param schema: name of the destination schema, None if not defined.
     """
     def __init__(self, engine, table: str, schema: str or None = None, **kwargs):
-        super().__init__(**kwargs)
+
         self.engine = engine
-        self.table = table
         self.schema = schema
+        self.table = table
+        uri = f'{schema}.{table}'
+        super().__init__(uri)
 
     def load(self):
         self.output.to_sql(name=self.table,
@@ -69,11 +70,11 @@ class PandasSQLLoader(PandasLoader):
         return self
 
 
-class PandasExcelLoader(PandasLoader, FileLoader):
+class PandasExcelLoader(PandasLoader):
 
-    def __init__(self, sheet_name='Sheet1', **kwargs):
+    def __init__(self, uri, sheet_name='Sheet1', **kwargs):
         self.sheet_name = sheet_name
-        super().__init__(**kwargs)
+        super().__init__(uri)
 
     def load(self):
         self.output.to_excel(
@@ -83,10 +84,10 @@ class PandasExcelLoader(PandasLoader, FileLoader):
         return self
 
 
-class PandasFeatherLoader(PandasLoader, FileLoader):
+class PandasFeatherLoader(PandasLoader):
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, uri):
+        super().__init__(uri)
 
     def load(self):
         self.output.to_feather(self.uri)

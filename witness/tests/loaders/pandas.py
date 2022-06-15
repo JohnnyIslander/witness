@@ -14,54 +14,40 @@
 #     limitations under the License.
 
 import pytest
-from witness.loaders import PandasSQLLoader
-from core.batch import mock_batch
-from sqlalchemy import create_engine
+from os import path
+from witness import Batch
+from witness.loaders.pandas import PandasFeatherLoader, PandasExcelLoader
 
-import yaml
+from witness.tests.core.batch import calibration_meta, calibration_data
 
 xfail = pytest.mark.xfail
 parametrize = pytest.mark.parametrize
 
-# region Mock
 
-with open(r'..\mock\connections.yaml', 'r') as stream:
-    try:
-        conf = yaml.safe_load(stream)
-    except yaml.YAMLError as exc:
-        print(exc)
+# region mock
+mock_dir = path.abspath('../../../mock')
+files_dir = f'{mock_dir}/files'
+calibration_batch = Batch(calibration_data, calibration_meta)
 
-mock_conn_config = conf['connections']['main_dwh']
-
-mock_host = mock_conn_config['host']
-mock_port = mock_conn_config['port']
-mock_dialect = mock_conn_config['dialect']
-mock_db = mock_conn_config['test']['db']
-mock_user = mock_conn_config['test']['user']
-mock_pwd = mock_conn_config['test']['password']
-
-mock_dsn = f"{mock_dialect}://" \
-           f"{mock_user}:{mock_pwd}" \
-           f"@{mock_host}:{mock_port}" \
-           f"/{mock_db}"
-mock_schema = 'raw_etran'
-mock_engine = create_engine(mock_dsn,
-                            echo=False)
-
-mock_table = 'cnt_dislocation'
-
-mock_loader = PandasSQLLoader(engine=mock_engine, table=mock_table, schema=mock_schema)
-
-# endregion Mock
+mock_params = [
+    (PandasFeatherLoader, f'{files_dir}/feather_dump', calibration_batch),
+    (PandasExcelLoader, f'{files_dir}/excel_dump.xlsx', calibration_batch)
+]
 
 
-def test_prepare():
-    mock_loader.prepare(mock_batch)
+# endregion mock
 
 
-def test_load():
+@parametrize('loader, uri, batch', mock_params)
+def test_prepare(loader, uri, batch):
+    new_loader = loader(uri)
+    new_loader.prepare(batch)
 
-    mock_loader.prepare(mock_batch).load()
+
+@parametrize('loader, uri, batch', mock_params)
+def test_load(loader, uri, batch):
+    new_loader = loader(uri)
+    new_loader.prepare(batch).load()
 
 
 if __name__ == '__main__':

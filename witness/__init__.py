@@ -12,8 +12,14 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
 
+from .core.batch import Batch
+from . import version
+
 # Meta
-__version__ = '0.0.1'
+__version__ = version.version
 __author__ = 'Eugene Popov'
 
-from .core.batch import Batch
+
+import logging
+logging.getLogger('witness').addHandler(logging.NullHandler())
+formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s')

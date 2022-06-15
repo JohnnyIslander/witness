@@ -1,3 +1,4 @@
+#
 #  Copyright (c) 2022.  Eugene Popov.
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,29 +13,21 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
 
-from witness.core.abstract import AbstractLoader
+__all__ = ['version']
 
+try:
+    import importlib_metadata as metadata
+except ImportError:
+    from importlib import metadata  # type: ignore[no-redef]
 
-class DatabaseLoader(AbstractLoader):
+try:
+    version = metadata.version('witness-etl')
+except metadata.PackageNotFoundError:
+    import logging
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    # log = logging.getLogger(__name__)
+    # log.warning("Package metadata could not be found. Overriding it hardcoded.")
+    version = '0.0.1'
+    # from setup import version
 
-    def prepare(self, batch):
-        raise NotImplementedError
-
-    def load(self):
-        raise NotImplementedError
-
-
-class FileLoader(AbstractLoader):
-
-    def __init__(self, uri, **kwargs):
-        self.uri: str = uri
-        super().__init__(**kwargs)
-
-    def prepare(self, batch):
-        raise NotImplementedError
-
-    def load(self):
-        raise NotImplementedError
+del metadata
