@@ -15,35 +15,38 @@
 
 import pytest
 from witness.core.batch import Batch
-from witness.tests import batch
+import datetime
+
 
 xfail = pytest.mark.xfail
 parametrize = pytest.mark.parametrize
 
 # region Mock
 
-mock_struct_empty = batch.struct_empty
 
-mock_batch = Batch(batch.struct_full)
+calibration_meta = {
+    'extraction_timestamp': datetime.datetime(2022, 1, 1, 12, 0, 0, 0),
+    'record_source': r'calibration_data',
+    'tags': ['debug', 'snapshot']
+}
+
+calibration_data = [
+    {'string': 'string_value_1', 'integer': 31, 'timestamp': datetime.datetime(2022, 6, 15, 11, 0, 0, 0)},
+    {'string': 'string_value_2', 'integer': 14561, 'timestamp': datetime.datetime(2001, 4, 13, 12, 0, 0, 0)},
+    {'string': 'string_value_3', 'integer': 7634, 'timestamp': datetime.datetime(2031, 2, 5, 15, 43, 0, 0)}
+]
+
+mock_params = [
+    (Batch()),
+    (Batch(calibration_data, calibration_meta))
+]
 
 # endregion Mock
 
-@parametrize('args', [
-    (batch.struct_empty,),
-    (batch.struct_full,)
-])
-def test_create_batch(args):
-    new_batch = Batch(*args)
-    return new_batch
 
-
-@xfail(reason='attribute slots are fixed')
-def test_set_new_attr():
-    mock_batch.some_attribute = 'test'
-
-
-def test_batch_load():
-    mock_batch.load()
+@parametrize('batch', mock_params)
+def test_info(batch):
+    print(batch.info())
 
 
 if __name__ == '__main__':

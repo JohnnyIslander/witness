@@ -15,3 +15,5 @@
 # Meta
 __version__ = '0.0.1'
 __author__ = 'Eugene Popov'
+
+from .core.batch import Batch

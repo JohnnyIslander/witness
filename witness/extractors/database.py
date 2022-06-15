@@ -23,7 +23,7 @@ def is_select(q: str) -> bool:
 
 class DatabaseExtractor(AbstractExtractor):
 
-    def __init__(self, uri, **kwargs):
+    def __init__(self, uri):
         super().__init__(uri)
 
     def _set_extraction_timestamp(self):
@@ -38,10 +38,10 @@ class DatabaseExtractor(AbstractExtractor):
 
 class ODBCExtractor(DatabaseExtractor):
 
-    def __init__(self, uri: str, query: str, **kwargs):
+    def __init__(self, uri: str, query: str):
         self.uri: str = uri
         self.query: str = query if isinstance(query, str) and is_select(query) else None
-        super().__init__(**kwargs)
+        super().__init__(uri)
 
     def _set_extraction_timestamp(self):
         from datetime import datetime

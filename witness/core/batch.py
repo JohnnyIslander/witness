@@ -13,6 +13,7 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
 
+from functools import singledispatchmethod
 from witness.core.abstract import AbstractBatch
 
 
@@ -25,10 +26,32 @@ class Batch(AbstractBatch):
 
     __slots__ = ('data', 'meta')
 
-    def __init__(self):
+    def __init__(self, data=None, meta=None):
 
-        self.data: list = []
-        self.meta: dict = {}
+        self.data: list or None = data
+        self.meta: dict or None = meta
+        self.is_restored: bool = False
+
+    def info(self):
+
+        if self.meta is None and self.data is None:
+            return 'Batch object is not containing any data.'
+
+        record_num = len(self.data) if self.data is not None else None
+
+        info_string = f"""
+        Number of records: {record_num}
+        Was {'restored from dump' if self.is_restored else 'originally extracted'}
+        Source: {self.meta['record_source']}
+        Extraction datetime: {self.meta['extraction_timestamp']}
+        """
+
+        try:
+            info_string = info_string + f"Tags: {self.meta['tags']}\n"
+        except KeyError:
+            pass
+
+        return info_string
 
     def fill(self, extractor):
         output = extractor.extract().unify().output
@@ -45,3 +68,4 @@ class Batch(AbstractBatch):
 
     def restore(self, uri):
         raise NotImplementedError
+

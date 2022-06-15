@@ -13,7 +13,6 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
 
-from __future__ import annotations
 from abc import ABCMeta, abstractmethod
 from datetime import datetime
 
@@ -35,7 +34,7 @@ class AbstractExtractor(metaclass=ABCMeta):
 
         self.uri = uri
         self.output = None
-        self.extraction_timestamp: datetime | None = None
+        self.extraction_timestamp: datetime or None = None
 
     @abstractmethod
     def _set_extraction_timestamp(self):
