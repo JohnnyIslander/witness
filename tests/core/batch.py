@@ -58,9 +58,14 @@ def test_dump(batch):
 
 
 @parametrize('batch', mock_params)
+def test_restore_no_uri(batch):
+    batch.restore()
+
+
+@parametrize('batch', mock_params)
 def test_persist(batch):
     batch.dump(dump_uri)
-    batch.restore(dump_uri)
+    batch.restore()
     assert batch.meta['record_source'] == calibration_meta['record_source']
     assert batch.meta['extraction_timestamp'] == calibration_meta['extraction_timestamp']
 

@@ -12,7 +12,7 @@
 #     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
-
+import os
 from functools import singledispatchmethod
 from witness.core.abstract import AbstractBatch
 from witness.extractors.pandas import PandasFeatherExtractor as DumpExtractor
@@ -32,6 +32,7 @@ class Batch(AbstractBatch):
 
         self.data: list or None = data
         self.meta: dict or None = meta
+        self.is_restored = False
 
     def info(self):
 
@@ -42,7 +43,7 @@ class Batch(AbstractBatch):
 
         info_string = f"""
         Number of records: {record_num}
-        Was {'restored from dump' if self.meta['is_restored'] else 'originally extracted'}
+        Was {'restored from dump ' + f"{self.meta['dump_uri']}" if self.is_restored else 'originally extracted'}
         Source: {self.meta['record_source']}
         Extraction datetime: {self.meta['extraction_timestamp']}
         """
@@ -64,11 +65,17 @@ class Batch(AbstractBatch):
         loader.prepare(self).load()
         return self
 
+    def _register_dump(self, uri):
+        self.meta['dump_uri'] = uri
+
     def dump(self, uri):
         self.push(DumpLoader(uri))
+        self._register_dump(uri)
 
-    def restore(self, uri):
+    def restore(self, uri=None):
+        uri = self.meta['dump_uri'] if uri is None else uri
         output = DumpExtractor(uri).extract().unify().output
         setattr(self, 'data', output['data'])
+        self.is_restored = True
         return self
 
