@@ -24,18 +24,7 @@ class FileExtractor(AbstractExtractor):
 
     def extract(self):
         self._set_extraction_timestamp()
-        self._set_record_source()
 
     def unify(self):
         raise NotImplementedError
-
-
-class ExcelFileExtractor(FileExtractor):
-
-    def _set_extraction_timestamp(self):
-        pass
-
-    def extract(self):
-        pass
-
 
