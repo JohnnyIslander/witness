@@ -15,6 +15,8 @@
 
 from functools import singledispatchmethod
 from witness.core.abstract import AbstractBatch
+from witness.extractors.pandas import PandasFeatherExtractor as DumpExtractor
+from witness.loaders.pandas import PandasFeatherLoader as DumpLoader
 
 
 class Batch(AbstractBatch):
@@ -30,7 +32,6 @@ class Batch(AbstractBatch):
 
         self.data: list or None = data
         self.meta: dict or None = meta
-        self.is_restored: bool = False
 
     def info(self):
 
@@ -41,7 +42,7 @@ class Batch(AbstractBatch):
 
         info_string = f"""
         Number of records: {record_num}
-        Was {'restored from dump' if self.is_restored else 'originally extracted'}
+        Was {'restored from dump' if self.meta['is_restored'] else 'originally extracted'}
         Source: {self.meta['record_source']}
         Extraction datetime: {self.meta['extraction_timestamp']}
         """
@@ -63,9 +64,11 @@ class Batch(AbstractBatch):
         loader.prepare(self).load()
         return self
 
-    def persist(self, uri):
-        raise NotImplementedError
+    def dump(self, uri):
+        self.push(DumpLoader(uri))
 
     def restore(self, uri):
-        raise NotImplementedError
+        output = DumpExtractor(uri).extract().unify().output
+        setattr(self, 'data', output['data'])
+        return self
 

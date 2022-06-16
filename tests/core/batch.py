@@ -14,6 +14,7 @@
 #     limitations under the License.
 
 import pytest
+from os import path
 from witness.core.batch import Batch
 import datetime
 
@@ -22,7 +23,9 @@ xfail = pytest.mark.xfail
 parametrize = pytest.mark.parametrize
 
 # region Mock
-
+mock_dir = path.abspath('../../mock')
+files_dir = f'{mock_dir}/files'
+dump_uri = f'{files_dir}/std_dump'
 
 calibration_meta = {
     'extraction_timestamp': datetime.datetime(2022, 1, 1, 12, 0, 0, 0),
@@ -37,7 +40,7 @@ calibration_data = [
 ]
 
 mock_params = [
-    (Batch()),
+    # (Batch()),
     (Batch(calibration_data, calibration_meta))
 ]
 
@@ -47,6 +50,19 @@ mock_params = [
 @parametrize('batch', mock_params)
 def test_info(batch):
     print(batch.info())
+
+
+@parametrize('batch', mock_params)
+def test_dump(batch):
+    batch.dump(dump_uri)
+
+
+@parametrize('batch', mock_params)
+def test_persist(batch):
+    batch.dump(dump_uri)
+    batch.restore(dump_uri)
+    assert batch.meta['record_source'] == calibration_meta['record_source']
+    assert batch.meta['extraction_timestamp'] == calibration_meta['extraction_timestamp']
 
 
 if __name__ == '__main__':
