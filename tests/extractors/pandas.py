@@ -13,41 +13,34 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
 
-import pytest
-from os import path
-from witness import Batch
-from witness.loaders.pandas import PandasFeatherLoader, PandasExcelLoader
 
-from witness.tests.core.batch import calibration_meta, calibration_data
+from os import path
+import pytest
+from witness.extractors.pandas import PandasFeatherExtractor, PandasExcelExtractor
 
 xfail = pytest.mark.xfail
 parametrize = pytest.mark.parametrize
 
-
 # region mock
-mock_dir = path.abspath('../../../mock')
+mock_dir = path.abspath('../../mock')
 files_dir = f'{mock_dir}/files'
-calibration_batch = Batch(calibration_data, calibration_meta)
-
 mock_params = [
-    (PandasFeatherLoader, f'{files_dir}/feather_dump', calibration_batch),
-    (PandasExcelLoader, f'{files_dir}/excel_dump.xlsx', calibration_batch)
+    (PandasFeatherExtractor, f'{files_dir}/feather_dump'),
+    (PandasExcelExtractor, f'{files_dir}/excel_dump.xlsx')
 ]
-
-
 # endregion mock
 
 
-@parametrize('loader, uri, batch', mock_params)
-def test_prepare(loader, uri, batch):
-    new_loader = loader(uri)
-    new_loader.prepare(batch)
+@parametrize('extractor, uri', mock_params)
+def test_create(extractor, uri):
+    new_extractor = extractor(uri=uri)
+    return new_extractor.uri
 
 
-@parametrize('loader, uri, batch', mock_params)
-def test_load(loader, uri, batch):
-    new_loader = loader(uri)
-    new_loader.prepare(batch).load()
+@parametrize('extractor, uri', mock_params)
+def test_extract(extractor, uri):
+    new_extractor = extractor(uri=uri)
+    new_extractor.extract()
 
 
 if __name__ == '__main__':
