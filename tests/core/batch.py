@@ -63,6 +63,13 @@ def test_restore_no_uri(batch):
 
 
 @parametrize('batch', mock_params)
+def test_attached_meta_after_restore(batch):
+    batch.restore(dump_uri)
+    assert batch.meta['extraction_timestamp'] == batch.data[0]['extraction_timestamp']
+    assert batch.meta['record_source'] == batch.data[0]['record_source']
+
+
+@parametrize('batch', mock_params)
 def test_persist(batch):
     batch.dump(dump_uri)
     batch.restore()
