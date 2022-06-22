@@ -42,10 +42,16 @@ class AbstractExtractor(metaclass=ABCMeta):
 
     @abstractmethod
     def extract(self):
+        """
+        An abstract method for data extraction.
+        """
         raise NotImplementedError
 
     @abstractmethod
     def unify(self):
+        """
+        An abstract method for deserialization from data source.
+        """
         raise NotImplementedError
 
 
@@ -58,8 +64,24 @@ class AbstractLoader(metaclass=ABCMeta):
 
     @abstractmethod
     def prepare(self, batch):
+        """
+        An abstract method of preparing data from a Batch object for loading.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def attach_meta(self, meta: list or None = None):
+        """
+        An abstract method for attaching meta from Batch-object
+        to data prepared for loading.
+        """
         raise NotImplementedError
 
     @abstractmethod
     def load(self):
+        """
+        An abstract method for loading data to destination store.
+        """
         raise NotImplementedError
+
+

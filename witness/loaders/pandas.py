@@ -31,8 +31,11 @@ class PandasLoader(AbstractLoader):
         self.output = df
         return self
 
+    def attach_meta(self, meta: list or None = None):
+        raise NotImplementedError
+
     def load(self):
-        pass
+        raise NotImplementedError
 
 
 class PandasSQLLoader(PandasLoader):

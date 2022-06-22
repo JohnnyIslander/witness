@@ -62,14 +62,18 @@ class Batch(AbstractBatch):
         return self
 
     def push(self, loader):
-        loader.prepare(self).load()
+        """
+        A method that pushes data, with the appropriate meta attached,
+        to the store defined by the loader passed in.
+        """
+        loader.prepare(self).load() # TODO: Add a call to the 'attach_meta' method of the loader
         return self
 
     def _register_dump(self, uri):
         self.meta['dump_uri'] = uri
 
     def dump(self, uri):
-        self.push(DumpLoader(uri))
+        DumpLoader(uri).prepare(self).load()
         self._register_dump(uri)
 
     def restore(self, uri=None):
