@@ -23,7 +23,7 @@ xfail = pytest.mark.xfail
 parametrize = pytest.mark.parametrize
 
 # region Mock
-mock_dir = path.abspath('../../mock')
+mock_dir = path.abspath('../mock')
 files_dir = f'{mock_dir}/files'
 dump_uri = f'{files_dir}/std_dump'
 

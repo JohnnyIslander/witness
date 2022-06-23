@@ -13,43 +13,36 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
 
+
+from os import path
 import pytest
-from witness.extractors.file import ExcelFileExtractor
+from witness.extractors.pandas import PandasFeatherExtractor, PandasExcelExtractor
+
 xfail = pytest.mark.xfail
 parametrize = pytest.mark.parametrize
 
-mock_uri = r'.\mock\mock_text.txt'
-mock_params = {
-    'filename_pattern': '(.)*(text)(.)*'
-}
+# region mock
+mock_dir = path.abspath('../mock')
+files_dir = f'{mock_dir}/files'
+mock_params = [
+    (PandasFeatherExtractor, f'{files_dir}/feather_dump'),
+    (PandasExcelExtractor, f'{files_dir}/excel_dump.xlsx')
+]
+# endregion mock
 
 
-correct_extractor = ExcelFileExtractor(uri=mock_uri, params=mock_params)
+@parametrize('extractor, uri', mock_params)
+def test_create(extractor, uri):
+    new_extractor = extractor(uri=uri)
+    return new_extractor.uri
 
 
-@parametrize('args', [
-    (mock_uri, mock_params)
-])
-def test_create_extractor_success(args):
-    new_extractor = ExcelFileExtractor(*args)
-    return new_extractor
-
-
-@xfail
-@parametrize('args', [
-    (1413, ),
-    ('rfagre', ),
-    ()
-])
-def test_create_extractor_fail(args):
-    new_extractor = ExcelFileExtractor(*args)
-    return new_extractor
-
-
-def test_params_are_iterable():
-    for parameter in correct_extractor.params:
-        print(parameter)
+@parametrize('extractor, uri', mock_params)
+def test_extract(extractor, uri):
+    new_extractor = extractor(uri=uri)
+    new_extractor.extract()
 
 
 if __name__ == '__main__':
+
     pytest.main()

@@ -1,3 +1,4 @@
+
 #  Copyright (c) 2022.  Eugene Popov.
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,4 +12,29 @@
 #     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
+
+import pytest
+from os import path
+from witness.loaders.pandas import PandasFeatherLoader, PandasExcelLoader
+
+# region mock
+mock_dir = path.abspath('./mock')
+files_dir = f'{mock_dir}/files'
+
+xfail = pytest.mark.xfail
+parametrize = pytest.mark.parametrize
+
+
+loaders = [
+    PandasFeatherLoader(f'{files_dir}/feather_dump'),
+    PandasExcelLoader(f'{files_dir}/excel_dump.xlsx')
+]
+
+# endregion mock
+
+
+@pytest.fixture(params=loaders)
+def new_loader(request):
+    yield request.param
+
 
