@@ -13,9 +13,11 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
 
+import logging
 from abc import ABCMeta, abstractmethod
 from datetime import datetime
 
+log = logging.getLogger(__name__)
 
 class AbstractBatch(metaclass=ABCMeta):
 
@@ -60,6 +62,7 @@ class AbstractLoader(metaclass=ABCMeta):
     def __init__(self, uri=None):
 
         self.uri = uri
+        self.batch = None
         self.output = None
 
     @abstractmethod
@@ -70,7 +73,7 @@ class AbstractLoader(metaclass=ABCMeta):
         raise NotImplementedError
 
     @abstractmethod
-    def attach_meta(self, meta: list or None = None):
+    def attach_meta(self, att_elements: [list[str]] or None = None):
         """
         An abstract method for attaching meta from Batch-object
         to data prepared for loading.
