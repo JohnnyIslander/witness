@@ -66,7 +66,7 @@ class Batch(AbstractBatch):
         A method that pushes data, with the appropriate meta attached,
         to the store defined by the loader passed in.
         """
-        loader.prepare(self).load() # TODO: Add a call to the 'attach_meta' method of the loader
+        loader.prepare(self).load()
         return self
 
     def _register_dump(self, uri):
