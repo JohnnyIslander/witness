@@ -19,6 +19,7 @@ from datetime import datetime
 
 log = logging.getLogger(__name__)
 
+
 class AbstractBatch(metaclass=ABCMeta):
 
     @abstractmethod
@@ -70,7 +71,7 @@ class AbstractLoader(metaclass=ABCMeta):
         """
         An abstract method of preparing data from a Batch object for loading.
         """
-        raise NotImplementedError
+        self._set_batch(batch)
 
     @abstractmethod
     def attach_meta(self, att_elements: [list[str]] or None = None):
@@ -87,4 +88,5 @@ class AbstractLoader(metaclass=ABCMeta):
         """
         raise NotImplementedError
 
-
+    def _set_batch(self, batch):
+        setattr(self, 'batch', batch)

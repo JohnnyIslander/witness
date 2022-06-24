@@ -27,6 +27,7 @@ class PandasLoader(AbstractLoader):
         super().__init__(uri)
 
     def prepare(self, batch):
+        super().prepare(batch)
         df = pd.DataFrame(batch.data, dtype='str')
         self.output = df
         return self
@@ -39,6 +40,8 @@ class PandasLoader(AbstractLoader):
         """
         try:
             meta = self.batch.meta
+            for element in meta:
+                meta[element] = str(meta[element])
         except AttributeError:
             log.exception('No batch object was passed to loader.'
                           'Pass a batch object to "prepare" method first.')
@@ -49,6 +52,8 @@ class PandasLoader(AbstractLoader):
         else:
             for element in att_elements:
                 self.output[element] = meta[element]
+
+        return self
 
     def load(self):
         raise NotImplementedError

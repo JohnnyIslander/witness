@@ -14,7 +14,7 @@
 #     limitations under the License.
 
 
-from os import path
+from . import mock_dir
 import pytest
 from witness.extractors.pandas import PandasFeatherExtractor, PandasExcelExtractor
 
@@ -22,7 +22,6 @@ xfail = pytest.mark.xfail
 parametrize = pytest.mark.parametrize
 
 # region mock
-mock_dir = path.abspath('../mock')
 files_dir = f'{mock_dir}/files'
 mock_params = [
     (PandasFeatherExtractor, f'{files_dir}/feather_dump'),
