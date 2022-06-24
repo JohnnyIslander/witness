@@ -49,6 +49,10 @@ def test_load_meta_attached(fxtr_loader, fxtr_batch):
     fxtr_loader.prepare(fxtr_batch).attach_meta().load()
 
 
+def test_load_chosen_meta_attached(fxtr_loader, fxtr_batch):
+    fxtr_loader.prepare(fxtr_batch).attach_meta(['record_source']).load()
+
+
 if __name__ == '__main__':
 
     pytest.main()
