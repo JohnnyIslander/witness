@@ -14,12 +14,8 @@
 #     limitations under the License.
 
 
-from . import mock_dir
-import pytest
+from tests import mock_dir, parametrize
 from witness.extractors.pandas import PandasFeatherExtractor, PandasExcelExtractor
-
-xfail = pytest.mark.xfail
-parametrize = pytest.mark.parametrize
 
 # region mock
 files_dir = f'{mock_dir}/files'
@@ -40,8 +36,3 @@ def test_create(extractor, uri):
 def test_extract(extractor, uri):
     new_extractor = extractor(uri=uri)
     new_extractor.extract()
-
-
-if __name__ == '__main__':
-
-    pytest.main()
