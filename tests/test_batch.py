@@ -13,14 +13,8 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
 
-import pytest
-from . import files_dir
-from witness.core.batch import Batch
+from tests import files_dir
 import datetime
-
-
-xfail = pytest.mark.xfail
-parametrize = pytest.mark.parametrize
 
 # region Mock
 dump_uri = f'{files_dir}/std_dump'
@@ -63,7 +57,3 @@ def test_persist(fxtr_batch):
     fxtr_batch.restore()
     assert fxtr_batch.meta['record_source'] == calibration_meta['record_source']
     assert fxtr_batch.meta['extraction_timestamp'] == calibration_meta['extraction_timestamp']
-
-
-if __name__ == '__main__':
-    pytest.main()

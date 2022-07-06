@@ -67,11 +67,16 @@ class PandasSQLLoader(PandasLoader):
     :param table: name of the destination table;
     :param schema: name of the destination schema, None if not defined.
     """
-    def __init__(self, engine, table: str, schema: str or None = None):
+    def __init__(self,
+                 engine,
+                 table: str,
+                 schema: str or None = None,
+                 method: str or None = None):
 
         self.engine = engine
         self.schema = schema
         self.table = table
+        self.method = method
         uri = f'{schema}.{table}'
         super().__init__(uri)
 
@@ -80,7 +85,7 @@ class PandasSQLLoader(PandasLoader):
                            con=self.engine,
                            schema=self.schema,
                            if_exists='append',
-                           method='multi')
+                           method=self.method)
         return self
 
 
