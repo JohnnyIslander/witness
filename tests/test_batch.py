@@ -13,18 +13,10 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
 
-import pytest
-from os import path
-from witness.core.batch import Batch
+from tests import files_dir
 import datetime
 
-
-xfail = pytest.mark.xfail
-parametrize = pytest.mark.parametrize
-
 # region Mock
-mock_dir = path.abspath('../../mock')
-files_dir = f'{mock_dir}/files'
 dump_uri = f'{files_dir}/std_dump'
 
 calibration_meta = {
@@ -39,43 +31,29 @@ calibration_data = [
     {'string': 'string_value_3', 'integer': 7634, 'timestamp': datetime.datetime(2031, 2, 5, 15, 43, 0, 0)}
 ]
 
-mock_params = [
-    # (Batch()),
-    (Batch(calibration_data, calibration_meta))
-]
-
 # endregion Mock
 
 
-@parametrize('batch', mock_params)
-def test_info(batch):
-    print(batch.info())
+def test_info(fxtr_batch):
+    print(fxtr_batch.info())
 
 
-@parametrize('batch', mock_params)
-def test_dump(batch):
-    batch.dump(dump_uri)
+def test_dump(fxtr_batch):
+    fxtr_batch.dump(dump_uri)
 
 
-@parametrize('batch', mock_params)
-def test_restore_no_uri(batch):
-    batch.restore()
+def test_restore_no_uri(fxtr_batch):
+    fxtr_batch.restore()
 
 
-@parametrize('batch', mock_params)
-def test_attached_meta_after_restore(batch):
-    batch.restore(dump_uri)
-    assert batch.meta['extraction_timestamp'] == batch.data[0]['extraction_timestamp']
-    assert batch.meta['record_source'] == batch.data[0]['record_source']
+def test_attached_meta_after_restore(fxtr_batch):
+    fxtr_batch.restore(dump_uri)
+    assert fxtr_batch.meta['extraction_timestamp'] == calibration_meta['extraction_timestamp']
+    assert fxtr_batch.meta['record_source'] == calibration_meta['record_source']
 
 
-@parametrize('batch', mock_params)
-def test_persist(batch):
-    batch.dump(dump_uri)
-    batch.restore()
-    assert batch.meta['record_source'] == calibration_meta['record_source']
-    assert batch.meta['extraction_timestamp'] == calibration_meta['extraction_timestamp']
-
-
-if __name__ == '__main__':
-    pytest.main()
+def test_persist(fxtr_batch):
+    fxtr_batch.dump(dump_uri)
+    fxtr_batch.restore()
+    assert fxtr_batch.meta['record_source'] == calibration_meta['record_source']
+    assert fxtr_batch.meta['extraction_timestamp'] == calibration_meta['extraction_timestamp']

@@ -56,20 +56,28 @@ class Batch(AbstractBatch):
         return info_string
 
     def fill(self, extractor):
+        """
+        Fills batch internal datastructures using
+        the extractor passed in.
+        """
         output = extractor.extract().unify().output
         setattr(self, 'data', output['data'])
         setattr(self, 'meta', output['meta'])
         return self
 
-    def push(self, loader):
-        loader.prepare(self).load()
+    def push(self, loader, att_elements: [list[str]] or None = None):
+        """
+        Pushes data, with the appropriate meta attached,
+        to the store defined by the loader passed in.
+        """
+        loader.prepare(self).attach_meta(att_elements).load()
         return self
 
     def _register_dump(self, uri):
         self.meta['dump_uri'] = uri
 
     def dump(self, uri):
-        self.push(DumpLoader(uri))
+        DumpLoader(uri).prepare(self).load()
         self._register_dump(uri)
 
     def restore(self, uri=None):

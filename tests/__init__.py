@@ -12,3 +12,14 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
 
+from os import path, getcwd
+import pytest
+
+# pytest decorators shortcuts
+xfail = pytest.mark.xfail
+parametrize = pytest.mark.parametrize
+
+# mock resources shortcuts
+
+mock_dir = path.abspath('../mock') if 'tests' in getcwd() else path.abspath('./mock')
+files_dir = f'{mock_dir}/files'

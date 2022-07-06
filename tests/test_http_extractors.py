@@ -1,3 +1,5 @@
+
+
 #  Copyright (c) 2022.  Eugene Popov.
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,3 +14,23 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
 
+import pytest
+from tests import mock_dir, xfail, parametrize
+from witness.extractors.http import JsonHttpGetExtractor
+
+
+mock_uri = 'http://example.com'
+mock_params = {}
+
+
+extractor = JsonHttpGetExtractor(uri=mock_uri, params=mock_params)
+
+
+def test_extract():
+    extractor.extract()
+    print(extractor.output)
+
+
+def test_unify():
+    extractor.extract().unify()
+    print(extractor.output)

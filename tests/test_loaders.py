@@ -14,40 +14,43 @@
 #     limitations under the License.
 
 import pytest
-from os import path
-from witness import Batch
-from witness.loaders.pandas import PandasFeatherLoader, PandasExcelLoader
 
-from tests.core.batch import calibration_meta, calibration_data
+from witness import Batch
+from tests.test_batch import calibration_meta, calibration_data
 
 xfail = pytest.mark.xfail
 parametrize = pytest.mark.parametrize
 
-
 # region mock
-mock_dir = path.abspath('../../mock')
-files_dir = f'{mock_dir}/files'
-calibration_batch = Batch(calibration_data, calibration_meta)
 
-mock_params = [
-    (PandasFeatherLoader, f'{files_dir}/feather_dump', calibration_batch),
-    (PandasExcelLoader, f'{files_dir}/excel_dump.xlsx', calibration_batch)
-]
+calibration_batch = Batch(calibration_data, calibration_meta)
 
 
 # endregion mock
 
-
-@parametrize('loader, uri, batch', mock_params)
-def test_prepare(loader, uri, batch):
-    new_loader = loader(uri)
-    new_loader.prepare(batch)
+def test_prepare(fxtr_loader, fxtr_batch):
+    fxtr_loader.prepare(fxtr_batch)
 
 
-@parametrize('loader, uri, batch', mock_params)
-def test_load(loader, uri, batch):
-    new_loader = loader(uri)
-    new_loader.prepare(batch).load()
+@xfail
+def test_attach_meta_no_batch(fxtr_loader):
+    fxtr_loader.attach_meta()
+
+
+def test_attach_meta(fxtr_loader, fxtr_batch):
+    fxtr_loader.prepare(fxtr_batch).attach_meta()
+
+
+def test_load(fxtr_loader, fxtr_batch):
+    fxtr_loader.prepare(fxtr_batch).load()
+
+
+def test_load_meta_attached(fxtr_loader, fxtr_batch):
+    fxtr_loader.prepare(fxtr_batch).attach_meta().load()
+
+
+def test_load_chosen_meta_attached(fxtr_loader, fxtr_batch):
+    fxtr_loader.prepare(fxtr_batch).attach_meta(['record_source']).load()
 
 
 if __name__ == '__main__':

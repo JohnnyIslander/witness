@@ -17,8 +17,8 @@ from witness.core.abstract import AbstractLoader
 import logging
 import pandas as pd
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
 
 
 class PandasLoader(AbstractLoader):
@@ -27,12 +27,36 @@ class PandasLoader(AbstractLoader):
         super().__init__(uri)
 
     def prepare(self, batch):
+        super().prepare(batch)
         df = pd.DataFrame(batch.data, dtype='str')
         self.output = df
         return self
 
+    def attach_meta(self, att_elements: [list[str]] or None = None):
+        """
+
+        :param att_elements:
+        :return:
+        """
+        try:
+            meta = self.batch.meta
+            for element in meta:
+                meta[element] = str(meta[element])
+        except AttributeError:
+            log.exception('No batch object was passed to loader.'
+                          'Pass a batch object to "prepare" method first.')
+            raise AttributeError('No batch object was passed to loader')
+        if att_elements is None:
+            for element in meta:
+                self.output[element] = meta[element]
+        else:
+            for element in att_elements:
+                self.output[element] = meta[element]
+
+        return self
+
     def load(self):
-        pass
+        raise NotImplementedError
 
 
 class PandasSQLLoader(PandasLoader):
@@ -43,11 +67,16 @@ class PandasSQLLoader(PandasLoader):
     :param table: name of the destination table;
     :param schema: name of the destination schema, None if not defined.
     """
-    def __init__(self, engine, table: str, schema: str or None = None, **kwargs):
+    def __init__(self,
+                 engine,
+                 table: str,
+                 schema: str or None = None,
+                 method: str or None = None):
 
         self.engine = engine
         self.schema = schema
         self.table = table
+        self.method = method
         uri = f'{schema}.{table}'
         super().__init__(uri)
 
@@ -56,13 +85,13 @@ class PandasSQLLoader(PandasLoader):
                            con=self.engine,
                            schema=self.schema,
                            if_exists='append',
-                           method='multi')
+                           method=self.method)
         return self
 
 
 class PandasExcelLoader(PandasLoader):
 
-    def __init__(self, uri, sheet_name='Sheet1', **kwargs):
+    def __init__(self, uri, sheet_name='Sheet1'):
         self.sheet_name = sheet_name
         super().__init__(uri)
 
