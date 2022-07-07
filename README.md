@@ -8,6 +8,9 @@ Intended to be simple and concise.
 python3 -m pip install witness-etl
 ```
 
-## Contacts
+## Versioning
+This lib supports [SemVer](https://semver.org/) approach for all packages released.
 
-evgeniypalych@gmail.com
+## Contributing
+Want to help or got questions? 
+[Contact me.](mailto:evgeniypalych@gmail.com)
