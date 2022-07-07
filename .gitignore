@@ -46,6 +46,13 @@ dmypy.json
 # IDE
 .idea/
 
+# build
+build/
+dist/
+*.egg-info
+
+
 # Custom
 temp/
 logs/
+mock/
