@@ -17,6 +17,7 @@ import pytest
 from . import files_dir
 import datetime
 from witness.core.batch import Batch
+from witness.extractors.http import JsonHttpGetExtractor
 from witness.loaders.pandas import PandasFeatherLoader, PandasExcelLoader
 
 xfail = pytest.mark.xfail
@@ -48,6 +49,15 @@ loaders = [
     PandasExcelLoader(f'{files_dir}/excel_dump.xlsx')
 ]
 
+
+http_get_uris = [
+    {'uri': 'http://foo-api.com/data', 'body': '{"success": true}', 'status': 200, 'content_type': 'text/json'}
+]
+
+http_extractors = [
+    JsonHttpGetExtractor
+]
+
 # endregion mock
 
 
@@ -61,3 +71,11 @@ def fxtr_loader(request):
     yield request.param
 
 
+@pytest.fixture(params=http_get_uris)
+def fxtr_get_uri(request):
+    yield request.param
+
+
+@pytest.fixture(params=http_extractors)
+def fxtr_http_extractor(request):
+    yield request.param
