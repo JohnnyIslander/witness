@@ -81,6 +81,10 @@ class Batch(AbstractBatch):
         self._register_dump(uri)
 
     def restore(self, uri=None):
+        """
+        Fills batch with data from dump.
+        If no dump uri provided it'll try search in batch meta.
+        """
         uri = self.meta['dump_uri'] if uri is None else uri
         output = DumpExtractor(uri).extract().unify().output
         setattr(self, 'data', output['data'])
