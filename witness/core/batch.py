@@ -39,21 +39,21 @@ class Batch(AbstractBatch):
         if self.meta is None and self.data is None:
             return 'Batch object is not containing any data.'
 
-        record_num = len(self.data) if self.data is not None else None
+        number_of_records = len(self.data) if self.data is not None else None
 
-        info_string = f"""
-        Number of records: {record_num}
+        message = f"""
+        Number of records: {number_of_records}
         Was {'restored from dump ' + f"{self.meta['dump_uri']}" if self.is_restored else 'originally extracted'}
         Source: {self.meta['record_source']}
         Extraction datetime: {self.meta['extraction_timestamp']}
         """
 
         try:
-            info_string = info_string + f"Tags: {self.meta['tags']}\n"
+            message = message + f"Tags: {self.meta['tags']}\n"
         except KeyError:
             pass
 
-        return info_string
+        return message
 
     def fill(self, extractor):
         """
