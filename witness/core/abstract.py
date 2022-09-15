@@ -74,7 +74,7 @@ class AbstractLoader(metaclass=ABCMeta):
         self._set_batch(batch)
 
     @abstractmethod
-    def attach_meta(self, att_elements: [list[str]] or None = None):
+    def attach_meta(self, meta_elements: [list[str]] or None = None):
         """
         An abstract method for attaching meta from Batch-object
         to data prepared for loading.

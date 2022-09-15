@@ -32,10 +32,10 @@ class PandasLoader(AbstractLoader):
         self.output = df
         return self
 
-    def attach_meta(self, att_elements: [list[str]] or None = None):
+    def attach_meta(self, meta_elements: [list[str]] or None = None):
         """
 
-        :param att_elements:
+        :param meta_elements:
         :return:
         """
         try:
@@ -46,11 +46,11 @@ class PandasLoader(AbstractLoader):
             log.exception('No batch object was passed to loader.'
                           'Pass a batch object to "prepare" method first.')
             raise AttributeError('No batch object was passed to loader')
-        if att_elements is None:
+        if meta_elements is None:
             for element in meta:
                 self.output[element] = meta[element]
         else:
-            for element in att_elements:
+            for element in meta_elements:
                 self.output[element] = meta[element]
 
         return self

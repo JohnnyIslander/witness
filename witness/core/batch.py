@@ -65,12 +65,12 @@ class Batch(AbstractBatch):
         setattr(self, 'meta', output['meta'])
         return self
 
-    def push(self, loader, att_elements: [list[str]] or None = None):
+    def push(self, loader, meta_elements: [list[str]] or None = None):
         """
         Pushes data, with the appropriate meta attached,
         to the store defined by the loader passed in.
         """
-        loader.prepare(self).attach_meta(att_elements).load()
+        loader.prepare(self).attach_meta(meta_elements).load()
         return self
 
     def _register_dump(self, uri):
