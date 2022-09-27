@@ -1,4 +1,3 @@
-
 #  Copyright (c) 2022.  Eugene Popov.
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,6 +27,14 @@ class AbstractBatch(metaclass=ABCMeta):
 
     @abstractmethod
     def push(self, loader):
+        raise NotImplemented
+
+    @abstractmethod
+    def dump(self, uri):
+        raise NotImplemented
+
+    @abstractmethod
+    def restore(self, uri):
         raise NotImplemented
 
 

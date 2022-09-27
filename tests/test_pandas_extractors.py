@@ -15,7 +15,7 @@
 
 
 from tests import mock_dir, parametrize
-from witness.extractors.pandas import PandasFeatherExtractor, PandasExcelExtractor
+from witness.providers.pandas.extractors import PandasFeatherExtractor, PandasExcelExtractor
 
 # region mock
 files_dir = f'{mock_dir}/files'

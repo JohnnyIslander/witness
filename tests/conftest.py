@@ -1,4 +1,3 @@
-
 #  Copyright (c) 2022.  Eugene Popov.
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +16,9 @@ import pytest
 from . import files_dir
 import datetime
 from witness.core.batch import Batch
+from witness.providers.pandas.core import PandasBatch
 from witness.extractors.http import JsonHttpGetExtractor
-from witness.loaders.pandas import PandasFeatherLoader, PandasExcelLoader
+from witness.providers.pandas.loaders import PandasFeatherLoader, PandasExcelLoader
 
 xfail = pytest.mark.xfail
 parametrize = pytest.mark.parametrize
@@ -40,7 +40,8 @@ batch_data = [
 ]
 
 batches = [
-    Batch(batch_data, batch_meta)
+    Batch(batch_data, batch_meta),
+    PandasBatch(batch_data, batch_meta)
 ]
 
 

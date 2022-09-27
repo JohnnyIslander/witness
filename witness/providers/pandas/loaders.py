@@ -1,4 +1,3 @@
-
 #  Copyright (c) 2022.  Eugene Popov.
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,50 +12,8 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
 
-from witness.core.abstract import AbstractLoader
-import logging
-import pandas as pd
 
-log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
-
-
-class PandasLoader(AbstractLoader):
-
-    def __init__(self, uri):
-        super().__init__(uri)
-
-    def prepare(self, batch):
-        super().prepare(batch)
-        df = pd.DataFrame(batch.data, dtype='str')
-        self.output = df
-        return self
-
-    def attach_meta(self, meta_elements: [list[str]] or None = None):
-        """
-
-        :param meta_elements:
-        :return:
-        """
-        try:
-            meta = self.batch.meta
-            for element in meta:
-                meta[element] = str(meta[element])
-        except AttributeError:
-            log.exception('No batch object was passed to loader.'
-                          'Pass a batch object to "prepare" method first.')
-            raise AttributeError('No batch object was passed to loader')
-        if meta_elements is None:
-            for element in meta:
-                self.output[element] = meta[element]
-        else:
-            for element in meta_elements:
-                self.output[element] = meta[element]
-
-        return self
-
-    def load(self):
-        raise NotImplementedError
+from witness.providers.pandas.core import PandasLoader
 
 
 class PandasSQLLoader(PandasLoader):
