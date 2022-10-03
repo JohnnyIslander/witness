@@ -1,4 +1,3 @@
-
 #  Copyright (c) 2022.  Eugene Popov.
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,6 +27,14 @@ class AbstractBatch(metaclass=ABCMeta):
 
     @abstractmethod
     def push(self, loader):
+        raise NotImplemented
+
+    @abstractmethod
+    def dump(self, uri):
+        raise NotImplemented
+
+    @abstractmethod
+    def restore(self, uri):
         raise NotImplemented
 
 
@@ -74,7 +81,7 @@ class AbstractLoader(metaclass=ABCMeta):
         self._set_batch(batch)
 
     @abstractmethod
-    def attach_meta(self, att_elements: [list[str]] or None = None):
+    def attach_meta(self, meta_elements: [list[str]] or None = None):
         """
         An abstract method for attaching meta from Batch-object
         to data prepared for loading.

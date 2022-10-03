@@ -14,23 +14,35 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
 
-import pytest
-from tests import mock_dir, xfail, parametrize
-from witness.extractors.http import JsonHttpGetExtractor
+import httpretty
+
+httpretty.enable(verbose=True, allow_net_connect=False)
 
 
-mock_uri = 'http://example.com'
-mock_params = {}
+@httpretty.activate
+def test_extract(fxtr_http_extractor, fxtr_get_uri):
 
+    httpretty.register_uri(
+        method=httpretty.GET,
+        uri=fxtr_get_uri['uri'],
+        body=fxtr_get_uri['body'],
+        status=fxtr_get_uri['status'],
+        content_type=fxtr_get_uri['content_type']
+    )
 
-extractor = JsonHttpGetExtractor(uri=mock_uri, params=mock_params)
-
-
-def test_extract():
+    extractor = fxtr_http_extractor(uri=fxtr_get_uri['uri'])
     extractor.extract()
-    print(extractor.output)
 
 
-def test_unify():
+@httpretty.activate
+def test_unify(fxtr_http_extractor, fxtr_get_uri):
+
+    httpretty.register_uri(
+        method=httpretty.GET,
+        uri=fxtr_get_uri['uri'],
+        body=fxtr_get_uri['body'],
+        status=fxtr_get_uri['status'],
+        content_type=fxtr_get_uri['content_type']
+    )
+    extractor = fxtr_http_extractor(uri=fxtr_get_uri['uri'])
     extractor.extract().unify()
-    print(extractor.output)

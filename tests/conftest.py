@@ -1,4 +1,3 @@
-
 #  Copyright (c) 2022.  Eugene Popov.
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +16,9 @@ import pytest
 from . import files_dir
 import datetime
 from witness.core.batch import Batch
-from witness.loaders.pandas import PandasFeatherLoader, PandasExcelLoader
+from witness.providers.pandas.core import PandasBatch
+from witness.extractors.http import JsonHttpGetExtractor
+from witness.providers.pandas.loaders import PandasFeatherLoader, PandasExcelLoader
 
 xfail = pytest.mark.xfail
 parametrize = pytest.mark.parametrize
@@ -39,13 +40,23 @@ batch_data = [
 ]
 
 batches = [
-    Batch(batch_data, batch_meta)
+    Batch(batch_data, batch_meta),
+    PandasBatch(batch_data, batch_meta)
 ]
 
 
 loaders = [
     PandasFeatherLoader(f'{files_dir}/feather_dump'),
     PandasExcelLoader(f'{files_dir}/excel_dump.xlsx')
+]
+
+
+http_get_uris = [
+    {'uri': 'http://foo-api.com/data', 'body': '{"success": true}', 'status': 200, 'content_type': 'text/json'}
+]
+
+http_extractors = [
+    JsonHttpGetExtractor
 ]
 
 # endregion mock
@@ -61,3 +72,11 @@ def fxtr_loader(request):
     yield request.param
 
 
+@pytest.fixture(params=http_get_uris)
+def fxtr_get_uri(request):
+    yield request.param
+
+
+@pytest.fixture(params=http_extractors)
+def fxtr_http_extractor(request):
+    yield request.param

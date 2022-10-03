@@ -15,18 +15,8 @@
 
 import pytest
 
-from witness import Batch
-from tests.test_batch import calibration_meta, calibration_data
-
 xfail = pytest.mark.xfail
-parametrize = pytest.mark.parametrize
 
-# region mock
-
-calibration_batch = Batch(calibration_data, calibration_meta)
-
-
-# endregion mock
 
 def test_prepare(fxtr_loader, fxtr_batch):
     fxtr_loader.prepare(fxtr_batch)
