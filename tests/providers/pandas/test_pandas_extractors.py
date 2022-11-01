@@ -29,10 +29,10 @@ mock_params = [
 @parametrize('extractor, uri', mock_params)
 def test_create(extractor, uri):
     new_extractor = extractor(uri=uri)
-    return new_extractor.uri
+    assert new_extractor.uri
 
 
 @parametrize('extractor, uri', mock_params)
 def test_extract(extractor, uri):
     new_extractor = extractor(uri=uri)
-    new_extractor.extract()
+    assert new_extractor.extract()

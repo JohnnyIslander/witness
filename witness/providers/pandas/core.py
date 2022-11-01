@@ -15,7 +15,8 @@
 import pandas as pd
 import logging
 import pickle
-from witness.core.abstract import AbstractBatch, AbstractLoader, AbstractExtractor
+from typing import Optional
+from witness.core.abstract import AbstractBatch, AbstractLoader, AbstractExtractor, MetaData
 
 log = logging.getLogger(__name__)
 
@@ -25,9 +26,9 @@ class PandasBatch(AbstractBatch):
     __slots__ = ('data', 'meta')
 
     def __init__(self, data=None, meta=None):
-        self.data: pd.DataFrame or None = data
-        self.meta: dict or None = meta
-        self.is_restored = False
+        self.data: Optional[pd.DataFrame] = data
+        self.meta: Optional[MetaData] = MetaData(**meta)
+        self.is_restored: bool = False
 
     def fill(self, extractor):
         """
@@ -36,10 +37,10 @@ class PandasBatch(AbstractBatch):
         """
         output = extractor.extract().unify().output
         setattr(self, 'data', output['data'])
-        setattr(self, 'meta', output['meta'])
+        setattr(self, 'meta', MetaData(**output['meta']))
         return self
 
-    def push(self, loader, meta_elements: [list[str]] or None = None):
+    def push(self, loader, meta_elements: Optional[list[str]] = None):
         """
         Pushes data, with the appropriate meta attached,
         to the store defined by the loader passed in.
@@ -48,7 +49,7 @@ class PandasBatch(AbstractBatch):
         return self
 
     def _register_dump(self, uri):
-        self.meta['dump_uri'] = uri
+        setattr(self.meta, 'dump_uri', uri)
 
     def dump(self, uri):
         with open(uri, 'wb') as file:
@@ -60,7 +61,7 @@ class PandasBatch(AbstractBatch):
         Fills batch with data from dump.
         If no dump uri provided it'll try search in batch meta.
         """
-        uri = self.meta['dump_uri'] if uri is None else uri
+        uri = self.meta.dump_uri if uri is None else uri
         with open(uri, 'rb') as file:
             output = pickle.load(file)
         setattr(self, 'data', output)
@@ -82,21 +83,19 @@ class PandasLoader(AbstractLoader):
         self.output = df
         return self
 
-    def attach_meta(self, meta_elements: [list[str]] or None = None):
+    def attach_meta(self, meta_elements: Optional[list[str]] = None):
         try:
             meta = self.batch.meta
-            for element in meta:
-                meta[element] = str(meta[element])
         except AttributeError:
             log.exception('No batch object was passed to loader.'
                           'Pass a batch object to "prepare" method first.')
             raise AttributeError('No batch object was passed to loader')
         if meta_elements is None:
             for element in meta:
-                self.output[element] = meta[element]
+                self.output[element] = str(getattr(meta, element))
         else:
             for element in meta_elements:
-                self.output[element] = meta[element]
+                self.output[element] = str(getattr(meta, element))
 
         return self
 

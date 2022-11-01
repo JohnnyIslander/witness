@@ -38,12 +38,12 @@ def test_restore_no_uri(fxtr_batch):
 
 def test_attached_meta_after_restore(fxtr_batch):
     fxtr_batch.restore(dump_uri)
-    assert fxtr_batch.meta['extraction_timestamp'] == calibration_meta['extraction_timestamp']
-    assert fxtr_batch.meta['record_source'] == calibration_meta['record_source']
+    assert fxtr_batch.meta.extraction_timestamp == calibration_meta['extraction_timestamp']
+    assert fxtr_batch.meta.record_source == calibration_meta['record_source']
 
 
 def test_persist(fxtr_batch):
     fxtr_batch.dump(dump_uri)
     fxtr_batch.restore()
-    assert fxtr_batch.meta['record_source'] == calibration_meta['record_source']
-    assert fxtr_batch.meta['extraction_timestamp'] == calibration_meta['extraction_timestamp']
+    assert fxtr_batch.meta.record_source == calibration_meta['record_source']
+    assert fxtr_batch.meta.extraction_timestamp == calibration_meta['extraction_timestamp']
