@@ -27,7 +27,7 @@ except metadata.PackageNotFoundError:
 
     # log = logging.getLogger(__name__)
     # log.warning("Package metadata could not be found. Overriding it hardcoded.")
-    version = '0.0.1'
+    version = '0.0.5'
     # from setup import version
 
 del metadata
