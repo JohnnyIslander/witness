@@ -16,7 +16,8 @@ import pandas as pd
 import logging
 import pickle
 from typing import Optional
-from witness.core.abstract import AbstractBatch, AbstractLoader, AbstractExtractor, MetaData
+from witness.core.abstract import AbstractBatch, AbstractLoader, AbstractExtractor
+from witness.core.meta import MetaData
 
 log = logging.getLogger(__name__)
 

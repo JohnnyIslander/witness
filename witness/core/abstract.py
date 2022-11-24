@@ -14,9 +14,8 @@
 
 import logging
 from abc import ABCMeta, abstractmethod
-from dataclasses import dataclass, field
-from datetime import datetime
 from typing import Optional
+import pendulum
 
 log = logging.getLogger(__name__)
 
@@ -46,11 +45,10 @@ class AbstractExtractor(metaclass=ABCMeta):
 
         self.uri = uri
         self.output = None
-        self.extraction_timestamp: datetime or None = None
+        self.extraction_timestamp: Optional[pendulum.DateTime] = None
 
-    @abstractmethod
     def _set_extraction_timestamp(self):
-        raise NotImplementedError
+        setattr(self, 'extraction_timestamp', pendulum.now())
 
     @abstractmethod
     def extract(self):
@@ -83,7 +81,7 @@ class AbstractLoader(metaclass=ABCMeta):
         self._set_batch(batch)
 
     @abstractmethod
-    def attach_meta(self, meta_elements: [list[str]] or None = None):
+    def attach_meta(self, meta_elements: Optional[list] = None):
         """
         An abstract method for attaching meta from Batch-object
         to data prepared for loading.
@@ -101,33 +99,10 @@ class AbstractLoader(metaclass=ABCMeta):
         setattr(self, 'batch', batch)
 
 
-class MetaIterator:
+class AbstractSerializer(metaclass=ABCMeta):
 
-    def __init__(self, meta_class):
-        self._class_attrs = [a for a in dir(meta_class)if not a.startswith('__') and not callable(getattr(meta_class, a))]
-        self._class_size = len(self._class_attrs)
-        self._current_index = 0
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        if self._current_index < self._class_size:
-            element = self._class_attrs[self._current_index]
-            self._current_index += 1
-            return element
-        raise StopIteration
-
-
-@dataclass
-class MetaData:
-
-    record_source: Optional[str] = None
-    extraction_timestamp: Optional[datetime] = None
-    tags: Optional[list] = field(default_factory=list)
-    dump_uri: Optional[str] = ''
-    records_extracted: int = 0
-    is_restored: bool = False
-
-    def __iter__(self):
-        return MetaIterator(self)
+    def serialize(self):
+        """
+        An abstract method for serializing data from extracted formats to unified batch format.
+        """
+        raise NotImplementedError

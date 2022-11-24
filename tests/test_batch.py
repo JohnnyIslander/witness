@@ -14,7 +14,6 @@
 #     limitations under the License.
 
 from tests import files_dir, conftest
-import datetime
 
 # region Mock
 dump_uri = f'{files_dir}/std_dump'

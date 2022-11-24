@@ -12,7 +12,8 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
 
-from witness.core.abstract import AbstractBatch, MetaData
+from witness.core.abstract import AbstractBatch
+from witness.core.meta import MetaData
 from typing import Optional
 import pickle
 

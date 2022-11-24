@@ -14,7 +14,6 @@
 #     limitations under the License.
 
 from witness.core.abstract import AbstractExtractor
-from datetime import datetime
 import pandas as pd
 import logging
 
@@ -30,9 +29,6 @@ class PandasExtractor(AbstractExtractor):
         super().__init__(uri)
 
     output: pd.DataFrame
-
-    def _set_extraction_timestamp(self):
-        setattr(self, 'extraction_timestamp', datetime.now())
 
     def extract(self):
         self._set_extraction_timestamp()

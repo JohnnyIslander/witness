@@ -24,10 +24,10 @@ try:
     version = metadata.version('witness-etl')
 except metadata.PackageNotFoundError:
     import logging
-
-    # log = logging.getLogger(__name__)
-    # log.warning("Package metadata could not be found. Overriding it hardcoded.")
     version = '0.0.5'
-    # from setup import version
+
 
 del metadata
+
+if __name__ == '__main__':
+    print(version)

@@ -1,5 +1,4 @@
 
-from datetime import datetime
 from witness.core.abstract import AbstractExtractor
 import requests
 from requests.auth import AuthBase
@@ -11,9 +10,6 @@ class HttpGetExtractor(AbstractExtractor):
         self.params: dict or None = params
         self.auth = auth
         super().__init__(uri)
-
-    def _set_extraction_timestamp(self):
-        setattr(self, 'extraction_timestamp', datetime.now())
 
     def extract(self):
 
