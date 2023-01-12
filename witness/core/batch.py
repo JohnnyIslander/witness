@@ -97,4 +97,3 @@ class Batch(AbstractBatch):
         setattr(self, 'data', output)
         self.meta.is_restored = True
         return self
-

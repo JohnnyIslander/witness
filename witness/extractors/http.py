@@ -1,12 +1,19 @@
 
-from witness.core.abstract import AbstractExtractor
+from witness.core.abstract import AbstractExtractor, AbstractSerializer
+from witness.serializers.http import JsonSerializer
 import requests
 from requests.auth import AuthBase
+from typing import Optional
 
 
 class HttpGetExtractor(AbstractExtractor):
 
-    def __init__(self, uri, params: dict or None = None, auth: AuthBase = None):
+    def __init__(self,
+                 uri,
+                 params: Optional[dict] = None,
+                 auth: Optional[AuthBase] = None,
+                 serializer: Optional[AbstractSerializer] = JsonSerializer()):
+        self.serializer = serializer
         self.params: dict or None = params
         self.auth = auth
         super().__init__(uri)
@@ -22,17 +29,8 @@ class HttpGetExtractor(AbstractExtractor):
         return self
 
     def unify(self):
-        raise NotImplementedError
-
-
-class JsonHttpGetExtractor(HttpGetExtractor):
-
-    def unify(self):
-
-        data = self.output.json()
         meta = {'extraction_timestamp': self.extraction_timestamp,
                 'record_source': self.uri}
-
+        data = self.serializer.to_batch(self.output)
         setattr(self, 'output', {'meta': meta, 'data': data})
-
         return self

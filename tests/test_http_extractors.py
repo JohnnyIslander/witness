@@ -33,6 +33,21 @@ def test_extract(fxtr_http_extractor, fxtr_get_uri):
     extractor = fxtr_http_extractor(uri=fxtr_get_uri['uri'])
     extractor.extract()
 
+@httpretty.activate
+def test_serialize_to_batch(fxtr_http_extractor, fxtr_get_uri, fxtr_web_serializer):
+    serializer = fxtr_web_serializer()
+    httpretty.register_uri(
+        method=httpretty.GET,
+        uri=fxtr_get_uri['uri'],
+        body=fxtr_get_uri['body'],
+        status=fxtr_get_uri['status'],
+        content_type=fxtr_get_uri['content_type']
+    )
+    extractor = fxtr_http_extractor(uri=fxtr_get_uri['uri'], serializer=serializer)
+    serialized_output = extractor.extract().unify().output
+    print(f'Raw output: {extractor.output}')
+    assert serialized_output['data'] == {'success': True}
+
 
 @httpretty.activate
 def test_unify(fxtr_http_extractor, fxtr_get_uri):

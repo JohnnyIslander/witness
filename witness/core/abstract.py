@@ -101,8 +101,14 @@ class AbstractLoader(metaclass=ABCMeta):
 
 class AbstractSerializer(metaclass=ABCMeta):
 
-    def serialize(self):
+    def to_batch(self, raw):
         """
-        An abstract method for serializing data from extracted formats to unified batch format.
+        An abstract method for serializing extracted data to unified batch format.
+        """
+        raise NotImplementedError
+
+    def from_batch(self, raw):
+        """
+        An abstract method for deserializing data from unified batch format.
         """
         raise NotImplementedError

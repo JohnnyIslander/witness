@@ -14,63 +14,10 @@
 
 import pandas as pd
 import logging
-import pickle
 from typing import Optional
-from witness.core.abstract import AbstractBatch, AbstractLoader, AbstractExtractor
-from witness.core.meta import MetaData
+from witness.core.abstract import AbstractLoader
 
 log = logging.getLogger(__name__)
-
-
-class PandasBatch(AbstractBatch):
-
-    __slots__ = ('data', 'meta')
-
-    def __init__(self, data=None, meta=None):
-        self.data: Optional[pd.DataFrame] = data
-        self.meta: Optional[MetaData] = MetaData(**meta)
-        self.is_restored: bool = False
-
-    def fill(self, extractor):
-        """
-        Fills batch internal datastructures using
-        the extractor passed in.
-        """
-        output = extractor.extract().unify().output
-        setattr(self, 'data', output['data'])
-        setattr(self, 'meta', MetaData(**output['meta']))
-        return self
-
-    def push(self, loader, meta_elements: Optional[list[str]] = None):
-        """
-        Pushes data, with the appropriate meta attached,
-        to the store defined by the loader passed in.
-        """
-        loader.prepare(self).attach_meta(meta_elements).load()
-        return self
-
-    def _register_dump(self, uri):
-        setattr(self.meta, 'dump_uri', uri)
-
-    def dump(self, uri):
-        with open(uri, 'wb') as file:
-            pickle.dump(self.data, file)
-        self._register_dump(uri)
-
-    def restore(self, uri=None):
-        """
-        Fills batch with data from dump.
-        If no dump uri provided it'll try search in batch meta.
-        """
-        uri = self.meta.dump_uri if uri is None else uri
-        with open(uri, 'rb') as file:
-            output = pickle.load(file)
-        setattr(self, 'data', output)
-        self.is_restored = True
-        return self
-
-    def info(self):
-        pass
 
 
 class PandasLoader(AbstractLoader):
