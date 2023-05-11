@@ -13,39 +13,12 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
 
-from witness.core.abstract import AbstractExtractor
-from datetime import datetime
 import pandas as pd
 import logging
 
+from witness.providers.pandas.core import PandasExtractor
+
 log = logging.getLogger(__name__)
-
-
-class PandasExtractor(AbstractExtractor):
-    """
-    Basic pandas extractor class.
-    Provides a single 'unify' method for all child pandas extractors.
-    """
-    def __init__(self, uri):
-        super().__init__(uri)
-
-    output: pd.DataFrame
-
-    def _set_extraction_timestamp(self):
-        setattr(self, 'extraction_timestamp', datetime.now())
-
-    def extract(self):
-        self._set_extraction_timestamp()
-
-    def unify(self):
-
-        data = self.output.to_dict(orient='records')
-        meta = {'extraction_timestamp': self.extraction_timestamp,
-                'record_source': self.uri}
-
-        setattr(self, 'output', {'meta': meta, 'data': data})
-
-        return self
 
 
 class PandasFeatherExtractor(PandasExtractor):

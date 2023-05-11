@@ -13,7 +13,10 @@
 #     limitations under the License.
 
 from witness.core.abstract import AbstractBatch
+from witness.core.meta import MetaData
+from typing import Optional
 import pickle
+import os
 
 
 class Batch(AbstractBatch):
@@ -27,9 +30,12 @@ class Batch(AbstractBatch):
 
     def __init__(self, data=None, meta=None):
 
-        self.data: list or None = data
-        self.meta: dict or None = meta
+        self.data: Optional[list] = data
+        self.meta: Optional[MetaData] = MetaData(**meta) if meta is not None else None
         self.is_restored = False
+
+    def __repr__(self):
+        return '{}(meta={}, data={})'.format(self.__class__.__name__, self.meta, self.data)
 
     def info(self):
 
@@ -39,14 +45,14 @@ class Batch(AbstractBatch):
         number_of_records = len(self.data) if self.data is not None else None
 
         message = f"""
-        Number of records: {number_of_records}
-        Was {'restored from dump ' + f"{self.meta['dump_uri']}" if self.is_restored else 'originally extracted'}
-        Source: {self.meta['record_source']}
-        Extraction datetime: {self.meta['extraction_timestamp']}
+        Current number of records: {number_of_records}
+        Was {'restored from dump ' + f"{self.meta.dump_uri}" if self.is_restored else 'originally extracted'}
+        Source: {getattr(self.meta, 'record_source')}
+        Extraction datetime: {getattr(self.meta, 'extraction_timestamp')}
         """
 
         try:
-            message = message + f"Tags: {self.meta['tags']}\n"
+            message = message + f"Tags: {getattr(self.meta, 'tags')}\n"
         except KeyError:
             pass
 
@@ -57,12 +63,18 @@ class Batch(AbstractBatch):
         Fills batch internal datastructures using
         the extractor passed in.
         """
-        output = extractor.extract().unify().output
+        if extractor.output is None:
+            extractor.extract()
+
+        if extractor.is_unified:
+            output = extractor.output
+        else:
+            output = extractor.unify().output
         setattr(self, 'data', output['data'])
-        setattr(self, 'meta', output['meta'])
+        setattr(self, 'meta', MetaData(**output['meta']))
         return self
 
-    def push(self, loader, meta_elements: [list[str]] or None = None):
+    def push(self, loader, meta_elements: Optional[list[str]] = None):
         """
         Pushes data, with the appropriate meta attached,
         to the store defined by the loader passed in.
@@ -70,26 +82,46 @@ class Batch(AbstractBatch):
         loader.prepare(self).attach_meta(meta_elements).load()
         return self
 
-    def _register_dump(self, uri):
-        self.meta['dump_uri'] = uri
+    def _register_dump(self, uri: str):
+        setattr(self.meta, 'dump_uri', uri)
 
-    def dump(self, uri):
+    def render_dump_name(self, name: Optional[str] = None):
+        if name is None:
+            root, tail = os.path.split(self.meta.record_source)
+            name, ext = os.path.splitext(tail)
+        ts_string = self.meta.extraction_timestamp.strftime('%Y-%m-%d_%H-%M-%S_%f')
+        dump_name = f'dump_{name}_{ts_string}'
+        return dump_name
+
+    def dump(self, uri: Optional[str] = None):
         """
         Dumps batch data to pickle file with defined uri.
         """
-        with open(uri, 'wb') as file:
-            pickle.dump(self.data, file)
-        self._register_dump(uri)
 
-    def restore(self, uri=None):
+        if self.data is None:
+            print('Nothing to dump.')
+            return None
+
+        if uri is None:
+            dump_uri = self.render_dump_name()
+        elif os.path.isdir(uri):
+            dump_uri = f'{uri}/{self.render_dump_name()}'
+        else:
+            dump_uri = uri
+
+        with open(dump_uri, 'wb') as file:
+            pickle.dump(self.data, file)
+        self._register_dump(dump_uri)
+        return dump_uri
+
+    def restore(self, uri: Optional[str] = None):
         """
         Fills batch with data from dump.
         If no dump uri provided it'll try search in batch meta.
         """
-        uri = self.meta['dump_uri'] if uri is None else uri
+        uri = self.meta.dump_uri if uri is None else uri
         with open(uri, 'rb') as file:
             output = pickle.load(file)
         setattr(self, 'data', output)
-        self.is_restored = True
+        self.meta.is_restored = True
         return self
-

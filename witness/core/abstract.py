@@ -14,7 +14,8 @@
 
 import logging
 from abc import ABCMeta, abstractmethod
-from datetime import datetime
+from typing import Optional
+import pendulum
 
 log = logging.getLogger(__name__)
 
@@ -44,11 +45,15 @@ class AbstractExtractor(metaclass=ABCMeta):
 
         self.uri = uri
         self.output = None
-        self.extraction_timestamp: datetime or None = None
+        self.extraction_timestamp: Optional[pendulum.DateTime] = None
+        self.serializer: Optional[AbstractSerializer] = None
+        self.is_unified = False
 
-    @abstractmethod
     def _set_extraction_timestamp(self):
-        raise NotImplementedError
+        setattr(self, 'extraction_timestamp', pendulum.now())
+
+    def _set_unified_true(self):
+        setattr(self, 'is_unified', True)
 
     @abstractmethod
     def extract(self):
@@ -71,7 +76,9 @@ class AbstractLoader(metaclass=ABCMeta):
 
         self.uri = uri
         self.batch = None
+        self.meta_to_attach: Optional[dict] = None
         self.output = None
+        self.serializer: Optional[AbstractSerializer] = None
 
     @abstractmethod
     def prepare(self, batch):
@@ -81,12 +88,12 @@ class AbstractLoader(metaclass=ABCMeta):
         self._set_batch(batch)
 
     @abstractmethod
-    def attach_meta(self, meta_elements: [list[str]] or None = None):
+    def attach_meta(self, meta_elements: Optional[list] = None):
         """
         An abstract method for attaching meta from Batch-object
         to data prepared for loading.
         """
-        raise NotImplementedError
+        self._set_meta_to_attach(meta_elements)
 
     @abstractmethod
     def load(self):
@@ -97,3 +104,32 @@ class AbstractLoader(metaclass=ABCMeta):
 
     def _set_batch(self, batch):
         setattr(self, 'batch', batch)
+
+    def _set_meta_to_attach(self, meta_elements):
+        try:
+            meta = self.batch.meta
+        except AttributeError:
+            log.exception('No batch object was passed to loader.'
+                          'Pass a batch object to "prepare" method first.')
+            raise AttributeError('No batch object was passed to loader')
+        if meta_elements is None:
+            elements_to_attach = {element: str(getattr(meta, element)) for element in meta}
+        else:
+            elements_to_attach = {element: str(getattr(meta, element)) for element in meta_elements}
+
+        setattr(self, 'meta_to_attach', elements_to_attach)
+
+
+class AbstractSerializer(metaclass=ABCMeta):
+
+    def to_batch(self, raw, *args, **kwargs):
+        """
+        An abstract method for serializing extracted data to unified batch format.
+        """
+        raise NotImplementedError
+
+    def from_batch(self, data, *args, **kwargs):
+        """
+        An abstract method for deserializing data from unified batch format.
+        """
+        raise NotImplementedError

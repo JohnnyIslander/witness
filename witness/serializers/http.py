@@ -1,5 +1,5 @@
-#
-#  Copyright (c) 2022.  Eugene Popov.
+
+#  Copyright (c) 2023.  Eugene Popov.
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #     you may not use this file except in compliance with the License.
@@ -13,21 +13,18 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
 
-__all__ = ['version']
 
-try:
-    import importlib_metadata as metadata
-except ImportError:
-    from importlib import metadata  # type: ignore[no-redef]
-
-try:
-    version = metadata.version('witness-etl')
-except metadata.PackageNotFoundError:
-    import logging
-    version = '0.0.5'
+from witness.core.abstract import AbstractSerializer
+import json
 
 
-del metadata
+class JsonSerializer(AbstractSerializer):
 
-if __name__ == '__main__':
-    print(version)
+    def to_batch(self, raw, *args, **kwargs):
+        data = raw.json()
+        return data
+
+    def from_batch(self, data, *args, **kwargs):
+        raw = json.dumps(data)
+        return raw
+
