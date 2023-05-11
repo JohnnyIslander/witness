@@ -14,11 +14,11 @@
 #     limitations under the License.
 
 
-from tests import mock_dir, parametrize
+from tests import temp_dir, parametrize
 from witness.providers.pandas.extractors import PandasFeatherExtractor, PandasExcelExtractor
 
 # region mock
-files_dir = f'{mock_dir}/files'
+files_dir = f'{temp_dir}/files'
 mock_params = [
     (PandasFeatherExtractor, f'{files_dir}/feather_dump'),
     (PandasExcelExtractor, f'{files_dir}/excel_dump.xlsx')

@@ -21,5 +21,5 @@ parametrize = pytest.mark.parametrize
 
 # mock resources shortcuts
 
-mock_dir = path.abspath('../mock') if 'tests' in getcwd() else path.abspath('./mock')
-files_dir = f'{mock_dir}/files'
+temp_dir = path.abspath('../temp') if 'tests' in getcwd() else path.abspath('./temp')
+files_dir = f'{temp_dir}/files'

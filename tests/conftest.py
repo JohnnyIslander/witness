@@ -55,6 +55,18 @@ http_get_uris = [
     {'uri': 'http://foo-api.com/data', 'body': '{"success": true}', 'status': 200, 'content_type': 'text/xml'}
 ]
 
+record_sources = [
+    'http://foo-api.com/data',
+    '/home/user/file.txt',
+    r'C:\User\Documents\config.ini',
+    '1C_PowerBI_EX.dbo.VMTP_DC_VesselVoyage',
+    'single_file',
+    'single_file_with_extension.txt',
+    'http://vld-web08.hq.fesco.com/api/power-bi/vessel-processing',
+    r'\\vld-fs01\work\КД\Общие файлы КД\ИАЦ\1. Прогнозирование\Планы и факты\2023\План КД 2023 Бюджет.xlsx'
+]
+
+
 extractors = [
     HttpGetExtractor,
     JsonHttpGetExtractor
@@ -89,4 +101,9 @@ def fxtr_extractor(request):
 
 @pytest.fixture(params=web_serializers)
 def fxtr_web_serializer(request):
+    yield request.param
+
+
+@pytest.fixture(params=record_sources)
+def fxtr_record_source(request):
     yield request.param

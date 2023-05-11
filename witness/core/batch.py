@@ -16,6 +16,7 @@ from witness.core.abstract import AbstractBatch
 from witness.core.meta import MetaData
 from typing import Optional
 import pickle
+import os
 
 
 class Batch(AbstractBatch):
@@ -84,13 +85,34 @@ class Batch(AbstractBatch):
     def _register_dump(self, uri: str):
         setattr(self.meta, 'dump_uri', uri)
 
-    def dump(self, uri: str):
+    def render_dump_name(self, name: Optional[str] = None):
+        if name is None:
+            root, tail = os.path.split(self.meta.record_source)
+            name, ext = os.path.splitext(tail)
+        ts_string = self.meta.extraction_timestamp.strftime('%Y-%m-%d_%H-%M-%S_%f')
+        dump_name = f'dump_{name}_{ts_string}'
+        return dump_name
+
+    def dump(self, uri: Optional[str] = None):
         """
         Dumps batch data to pickle file with defined uri.
         """
-        with open(uri, 'wb') as file:
+
+        if self.data is None:
+            print('Nothing to dump.')
+            return None
+
+        if uri is None:
+            dump_uri = self.render_dump_name()
+        elif os.path.isdir(uri):
+            dump_uri = f'{uri}/{self.render_dump_name()}'
+        else:
+            dump_uri = uri
+
+        with open(dump_uri, 'wb') as file:
             pickle.dump(self.data, file)
-        self._register_dump(uri)
+        self._register_dump(dump_uri)
+        return dump_uri
 
     def restore(self, uri: Optional[str] = None):
         """
