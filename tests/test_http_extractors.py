@@ -33,6 +33,7 @@ def test_extract(fxtr_http_extractor, fxtr_get_uri):
     extractor = fxtr_http_extractor(uri=fxtr_get_uri['uri'])
     extractor.extract()
 
+
 @httpretty.activate
 def test_serialize_to_batch(fxtr_http_extractor, fxtr_get_uri, fxtr_web_serializer):
     serializer = fxtr_web_serializer()

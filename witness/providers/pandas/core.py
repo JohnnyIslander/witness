@@ -15,37 +15,65 @@
 import pandas as pd
 import logging
 from typing import Optional
-from witness.core.abstract import AbstractLoader
+from witness.core.abstract import AbstractLoader, AbstractSerializer, AbstractExtractor
 
 log = logging.getLogger(__name__)
 
 
+class PandasSerializer(AbstractSerializer):
+
+    def to_batch(self, raw, *args, **kwargs):
+        data = raw.to_dict(orient='records')
+        return data
+
+    def from_batch(self, data, *args, dtype='str', **kwargs):
+        df = pd.DataFrame(data, dtype=dtype)
+        return df
+
+
 class PandasLoader(AbstractLoader):
 
-    def __init__(self, uri):
+    def __init__(self, uri, serializer: Optional[AbstractSerializer] = PandasSerializer()):
         super().__init__(uri)
+        self.serializer = serializer
 
     def prepare(self, batch):
         super().prepare(batch)
-        df = pd.DataFrame(batch.data, dtype='str')
+        df = self.serializer.from_batch(batch.data)
         self.output = df
         return self
 
     def attach_meta(self, meta_elements: Optional[list[str]] = None):
-        try:
-            meta = self.batch.meta
-        except AttributeError:
-            log.exception('No batch object was passed to loader.'
-                          'Pass a batch object to "prepare" method first.')
-            raise AttributeError('No batch object was passed to loader')
-        if meta_elements is None:
-            for element in meta:
-                self.output[element] = str(getattr(meta, element))
-        else:
-            for element in meta_elements:
-                self.output[element] = str(getattr(meta, element))
+        super().attach_meta(meta_elements)
+        for element in self.meta_to_attach:
+            self.output[element] = self.meta_to_attach[element]
 
         return self
 
     def load(self):
         raise NotImplementedError
+
+
+class PandasExtractor(AbstractExtractor):
+    """
+    Basic pandas extractor class.
+    Provides a single 'unify' method for all child pandas extractors.
+    """
+    def __init__(self, uri):
+        super().__init__(uri)
+        self.serializer = PandasSerializer()
+
+    output: pd.DataFrame
+
+    def extract(self):
+        self._set_extraction_timestamp()
+
+    def unify(self):
+
+        data = self.serializer.to_batch(self.output)
+        meta = {'extraction_timestamp': self.extraction_timestamp,
+                'record_source': self.uri}
+
+        setattr(self, 'output', {'meta': meta, 'data': data})
+
+        return self

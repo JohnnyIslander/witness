@@ -16,7 +16,7 @@ import pytest
 from . import files_dir
 import datetime
 from witness.core.batch import Batch
-from witness.extractors.http import HttpGetExtractor
+from witness.extractors.http import HttpGetExtractor, JsonHttpGetExtractor
 from witness.serializers.http import JsonSerializer
 from witness.providers.pandas.loaders import PandasFeatherLoader, PandasExcelLoader
 
@@ -56,7 +56,8 @@ http_get_uris = [
 ]
 
 http_extractors = [
-    HttpGetExtractor
+    HttpGetExtractor,
+    JsonHttpGetExtractor
 ]
 
 web_serializers = [

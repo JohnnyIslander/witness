@@ -20,11 +20,11 @@ import json
 
 class JsonSerializer(AbstractSerializer):
 
-    def to_batch(self, raw):
+    def to_batch(self, raw, *args, **kwargs):
         data = raw.json()
         return data
 
-    def from_batch(self, data):
+    def from_batch(self, data, *args, **kwargs):
         raw = json.dumps(data)
         return raw
 

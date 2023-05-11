@@ -13,10 +13,10 @@ class HttpGetExtractor(AbstractExtractor):
                  params: Optional[dict] = None,
                  auth: Optional[AuthBase] = None,
                  serializer: Optional[AbstractSerializer] = JsonSerializer()):
+        super().__init__(uri)
         self.serializer = serializer
         self.params: dict or None = params
         self.auth = auth
-        super().__init__(uri)
 
     def extract(self):
 
@@ -34,3 +34,6 @@ class HttpGetExtractor(AbstractExtractor):
         data = self.serializer.to_batch(self.output)
         setattr(self, 'output', {'meta': meta, 'data': data})
         return self
+
+
+JsonHttpGetExtractor = HttpGetExtractor  # deprecated
