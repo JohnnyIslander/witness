@@ -14,6 +14,7 @@
 
 
 from witness.providers.pandas.core import PandasLoader
+import pandas as pd
 
 
 class PandasSQLLoader(PandasLoader):
@@ -48,15 +49,35 @@ class PandasSQLLoader(PandasLoader):
 
 class PandasExcelLoader(PandasLoader):
 
-    def __init__(self, uri, sheet_name='Sheet1'):
+    def __init__(self, uri, sheet_name='Sheet1', add_index=True):
         self.sheet_name = sheet_name
+        self.add_index = add_index
         super().__init__(uri)
 
-    def load(self):
-        self.output.to_excel(
-            excel_writer=self.uri,
-            sheet_name=self.sheet_name
-        )
+    def __load_single_sheet(self, **writer_kwargs):
+        with pd.ExcelWriter(path=self.uri,  **writer_kwargs) as writer:
+            self.output.to_excel(
+                excel_writer=writer,
+                sheet_name=self.sheet_name,
+                index=self.add_index
+            )
+        return self
+
+    def __load_multiple_sheets(self, **writer_kwargs):
+        with pd.ExcelWriter(path=self.uri, **writer_kwargs) as writer:
+            for sheet_name, df in self.output.items():
+                df.to_excel(
+                    excel_writer=writer,
+                    sheet_name=self.sheet_name,
+                    index=self.add_index
+                )
+        return self
+
+    def load(self, **writer_kwargs):
+        if isinstance(self.output, pd.DataFrame):
+            return self.__load_single_sheet(**writer_kwargs)
+        elif isinstance(self.output, dict):
+            return self.__load_multiple_sheets(**writer_kwargs)
         return self
 
 

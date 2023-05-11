@@ -33,6 +33,7 @@ class HttpGetExtractor(AbstractExtractor):
                 'record_source': self.uri}
         data = self.serializer.to_batch(self.output)
         setattr(self, 'output', {'meta': meta, 'data': data})
+        self._set_unified_true()
         return self
 
 

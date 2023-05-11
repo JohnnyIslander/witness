@@ -47,9 +47,13 @@ class AbstractExtractor(metaclass=ABCMeta):
         self.output = None
         self.extraction_timestamp: Optional[pendulum.DateTime] = None
         self.serializer: Optional[AbstractSerializer] = None
+        self.is_unified = False
 
     def _set_extraction_timestamp(self):
         setattr(self, 'extraction_timestamp', pendulum.now())
+
+    def _set_unified_true(self):
+        setattr(self, 'is_unified', True)
 
     @abstractmethod
     def extract(self):

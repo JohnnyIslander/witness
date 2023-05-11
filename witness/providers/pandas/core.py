@@ -75,5 +75,5 @@ class PandasExtractor(AbstractExtractor):
                 'record_source': self.uri}
 
         setattr(self, 'output', {'meta': meta, 'data': data})
-
+        self._set_unified_true()
         return self

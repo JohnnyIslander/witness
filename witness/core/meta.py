@@ -33,3 +33,29 @@ class MetaData:
 
     def __iter__(self):
         return MetaIterator(self)
+
+    def __setitem__(self, key, value):
+        setattr(self, key, value)
+
+    def __eq__(self, other):
+        if isinstance(other, MetaData):
+            return self.__dict__ == other.__dict__
+        elif isinstance(other, dict):
+            return self.__dict__ == other
+        return NotImplemented
+
+    def __contains__(self, item):
+        if isinstance(item, MetaData):
+            return item.items() <= self.items()
+        elif isinstance(item, dict):
+            return item.items() <= self.__dict__.items()
+        return False
+
+    def keys(self):
+        return self.__dict__.keys()
+
+    def values(self):
+        return self.__dict__.values()
+
+    def items(self):
+        return self.__dict__.items()

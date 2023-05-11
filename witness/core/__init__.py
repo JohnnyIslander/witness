@@ -14,3 +14,4 @@
 #     limitations under the License.
 
 from witness.core.batch import Batch
+from witness.core.meta import MetaData

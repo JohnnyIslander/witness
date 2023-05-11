@@ -55,7 +55,7 @@ http_get_uris = [
     {'uri': 'http://foo-api.com/data', 'body': '{"success": true}', 'status': 200, 'content_type': 'text/xml'}
 ]
 
-http_extractors = [
+extractors = [
     HttpGetExtractor,
     JsonHttpGetExtractor
 ]
@@ -82,8 +82,8 @@ def fxtr_get_uri(request):
     yield request.param
 
 
-@pytest.fixture(params=http_extractors)
-def fxtr_http_extractor(request):
+@pytest.fixture(params=extractors)
+def fxtr_extractor(request):
     yield request.param
 
 

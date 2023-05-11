@@ -30,7 +30,7 @@ class Batch(AbstractBatch):
     def __init__(self, data=None, meta=None):
 
         self.data: Optional[list] = data
-        self.meta: Optional[MetaData] = MetaData(**meta)
+        self.meta: Optional[MetaData] = MetaData(**meta) if meta is not None else None
         self.is_restored = False
 
     def __repr__(self):
@@ -62,7 +62,13 @@ class Batch(AbstractBatch):
         Fills batch internal datastructures using
         the extractor passed in.
         """
-        output = extractor.extract().unify().output
+        if extractor.output is None:
+            extractor.extract()
+
+        if extractor.is_unified:
+            output = extractor.output
+        else:
+            output = extractor.unify().output
         setattr(self, 'data', output['data'])
         setattr(self, 'meta', MetaData(**output['meta']))
         return self

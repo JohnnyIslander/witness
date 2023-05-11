@@ -14,6 +14,7 @@
 #     limitations under the License.
 
 from tests import files_dir, conftest
+from witness import MetaData
 
 # region Mock
 dump_uri = f'{files_dir}/std_dump'
@@ -25,6 +26,18 @@ calibration_data = conftest.batch_data
 
 def test_info(fxtr_batch):
     print(fxtr_batch.info())
+
+
+def test_construct_meta(fxtr_batch):
+    constructed_meta = MetaData(**calibration_meta)
+    assert fxtr_batch.meta == constructed_meta
+
+
+def test_manual_add_to_meta(fxtr_batch):
+    manual_constructed_meta = MetaData()
+    for k,v in calibration_meta.items():
+        manual_constructed_meta[k] = v
+    assert manual_constructed_meta == fxtr_batch.meta
 
 
 def test_dump(fxtr_batch):
@@ -46,3 +59,5 @@ def test_persist(fxtr_batch):
     fxtr_batch.restore()
     assert fxtr_batch.meta.record_source == calibration_meta['record_source']
     assert fxtr_batch.meta.extraction_timestamp == calibration_meta['extraction_timestamp']
+    assert fxtr_batch.meta.dump_uri == dump_uri
+
