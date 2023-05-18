@@ -25,41 +25,38 @@ class PandasSQLLoader(PandasLoader):
     :param table: name of the destination table;
     :param schema: name of the destination schema, None if not defined.
     """
-    def __init__(self,
-                 engine,
-                 table: str,
-                 schema: str or None = None,
-                 method: str or None = None):
 
+    def __init__(
+        self, engine, table: str, schema: str or None = None, method: str or None = None
+    ):
         self.engine = engine
         self.schema = schema
         self.table = table
         self.method = method
-        uri = f'{schema}.{table}'
+        uri = f"{schema}.{table}"
         super().__init__(uri)
 
     def load(self):
-        self.output.to_sql(name=self.table,
-                           con=self.engine,
-                           schema=self.schema,
-                           if_exists='append',
-                           method=self.method)
+        self.output.to_sql(
+            name=self.table,
+            con=self.engine,
+            schema=self.schema,
+            if_exists="append",
+            method=self.method,
+        )
         return self
 
 
 class PandasExcelLoader(PandasLoader):
-
-    def __init__(self, uri, sheet_name='Sheet1', add_index=True):
+    def __init__(self, uri, sheet_name="Sheet1", add_index=True):
         self.sheet_name = sheet_name
         self.add_index = add_index
         super().__init__(uri)
 
     def __load_single_sheet(self, **writer_kwargs):
-        with pd.ExcelWriter(path=self.uri,  **writer_kwargs) as writer:
+        with pd.ExcelWriter(path=self.uri, **writer_kwargs) as writer:
             self.output.to_excel(
-                excel_writer=writer,
-                sheet_name=self.sheet_name,
-                index=self.add_index
+                excel_writer=writer, sheet_name=self.sheet_name, index=self.add_index
             )
         return self
 
@@ -69,7 +66,7 @@ class PandasExcelLoader(PandasLoader):
                 df.to_excel(
                     excel_writer=writer,
                     sheet_name=self.sheet_name,
-                    index=self.add_index
+                    index=self.add_index,
                 )
         return self
 
@@ -82,7 +79,6 @@ class PandasExcelLoader(PandasLoader):
 
 
 class PandasFeatherLoader(PandasLoader):
-
     def __init__(self, uri):
         super().__init__(uri)
 
