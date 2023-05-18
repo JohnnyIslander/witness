@@ -49,6 +49,7 @@ class PandasSQLLoader(PandasLoader):
 
 class PandasExcelLoader(PandasLoader):
     def __init__(self, uri, sheet_name="Sheet1", add_index=True):
+
         self.sheet_name = sheet_name
         self.add_index = add_index
         super().__init__(uri)

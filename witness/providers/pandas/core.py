@@ -21,6 +21,7 @@ log = logging.getLogger(__name__)
 
 
 class PandasSerializer(AbstractSerializer):
+  
     @staticmethod
     def handle_df_list(raw: list) -> pd.DataFrame:
         return pd.concat(raw)
@@ -79,7 +80,7 @@ class PandasExtractor(AbstractExtractor):
     Provides a single 'unify' method for all child pandas extractors.
     """
 
-    def __init__(self, uri):
+    def __init__(self, uri, serializer: Optional[AbstractSerializer] = PandasSerializer()):
         super().__init__(uri)
         self.serializer = PandasSerializer()
 
