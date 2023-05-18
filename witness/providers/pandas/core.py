@@ -14,26 +14,46 @@
 
 import pandas as pd
 import logging
-from typing import Optional
+from typing import Optional, Union
 from witness.core.abstract import AbstractLoader, AbstractSerializer, AbstractExtractor
 
 log = logging.getLogger(__name__)
 
 
 class PandasSerializer(AbstractSerializer):
+  
+    @staticmethod
+    def handle_df_list(raw: list) -> pd.DataFrame:
+        return pd.concat(raw)
 
-    def to_batch(self, raw, *args, **kwargs):
-        data = raw.to_dict(orient='records')
-        return data
+    @staticmethod
+    def handle_df_dict(raw: dict) -> pd.DataFrame:
+        dfs = []
+        for df_name, df in raw.items():
+            df.dropna(axis=1, inplace=True, how="all")
+            df["df_name"] = df_name
+            dfs.append(df)
+        return pd.concat(dfs)
 
-    def from_batch(self, data, *args, dtype='str', **kwargs):
+    def to_batch(self, raw: Union[pd.DataFrame, list, dict], *args, **kwargs):
+        if isinstance(raw, pd.DataFrame):
+            return raw.to_dict(orient="records")
+        elif isinstance(raw, dict):
+            return self.handle_df_dict(raw)
+        elif isinstance(raw, list):
+            return self.handle_df_list(raw)
+        else:
+            raise ValueError("Unknown datastructure passed.")
+
+    def from_batch(self, data, *args, dtype="str", **kwargs):
         df = pd.DataFrame(data, dtype=dtype)
         return df
 
 
 class PandasLoader(AbstractLoader):
-
-    def __init__(self, uri, serializer: Optional[AbstractSerializer] = PandasSerializer()):
+    def __init__(
+        self, uri, serializer: Optional[AbstractSerializer] = PandasSerializer()
+    ):
         super().__init__(uri)
         self.serializer = serializer
 
@@ -59,7 +79,8 @@ class PandasExtractor(AbstractExtractor):
     Basic pandas extractor class.
     Provides a single 'unify' method for all child pandas extractors.
     """
-    def __init__(self, uri):
+
+    def __init__(self, uri, serializer: Optional[AbstractSerializer] = PandasSerializer()):
         super().__init__(uri)
         self.serializer = PandasSerializer()
 
@@ -67,13 +88,15 @@ class PandasExtractor(AbstractExtractor):
 
     def extract(self):
         self._set_extraction_timestamp()
+        return self
 
     def unify(self):
-
         data = self.serializer.to_batch(self.output)
-        meta = {'extraction_timestamp': self.extraction_timestamp,
-                'record_source': self.uri}
+        meta = {
+            "extraction_timestamp": self.extraction_timestamp,
+            "record_source": self.uri,
+        }
 
-        setattr(self, 'output', {'meta': meta, 'data': data})
+        setattr(self, "output", {"meta": meta, "data": data})
         self._set_unified_true()
         return self

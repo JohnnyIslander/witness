@@ -2,18 +2,20 @@
 # essential
 requests>=2.0.0
 pyyaml>=6.0
-pyarrow>=8.0.0
+pyarrow>=10.0.0
 pendulum~=2.1.0
 
 # additional
 numpy~=1.23.0; python_version >= '3.9'
-pandas~=1.4.0
-SQLAlchemy~=1.4.0
+pandas~=1.4.0,<2.0
+SQLAlchemy~=1.4.0,<2.0
 pyodbc==4.0.34
 openpyxl~=3.0.9
+tabula-py~=2.7.0
 
 # dev
 pytest>=7.0.0
+black~=23.3.0
 httpretty~=1.1.4
 
 # deprecated

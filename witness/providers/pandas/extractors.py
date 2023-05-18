@@ -1,4 +1,3 @@
-
 #  Copyright (c) 2022.  Eugene Popov.
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,17 +21,15 @@ log = logging.getLogger(__name__)
 
 
 class PandasFeatherExtractor(PandasExtractor):
-
     def extract(self):
         df = pd.read_feather(self.uri)
-        setattr(self, 'output', df)
+        setattr(self, "output", df)
         super().extract()
 
         return self
 
 
 class PandasExcelExtractor(PandasExtractor):
-
     def __init__(self, uri, sheet_name=0, header=0, dtype=None):
         self.sheet_name: str or int or None = sheet_name
         self.header: int = header
@@ -40,12 +37,10 @@ class PandasExcelExtractor(PandasExtractor):
         super().__init__(uri)
 
     def extract(self):
-        df = pd.read_excel(self.uri,
-                           sheet_name=self.sheet_name,
-                           header=self.header,
-                           dtype=self.dtype)
-        setattr(self, 'output', df)
+        df = pd.read_excel(
+            self.uri, sheet_name=self.sheet_name, header=self.header, dtype=self.dtype
+        )
+        setattr(self, "output", df)
         super().extract()
 
         return self
-
