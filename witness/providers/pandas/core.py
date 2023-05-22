@@ -87,7 +87,7 @@ class PandasExtractor(AbstractExtractor):
     output: pd.DataFrame
 
     def extract(self):
-        self._set_extraction_timestamp()
+        self.set_extraction_timestamp()
         return self
 
     def unify(self):

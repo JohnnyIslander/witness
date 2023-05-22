@@ -24,7 +24,7 @@ class HttpGetExtractor(AbstractExtractor):
         response.raise_for_status()
 
         setattr(self, 'output', response)
-        self._set_extraction_timestamp()
+        self.set_extraction_timestamp()
 
         return self
 

@@ -19,7 +19,7 @@ from witness.core.abstract import AbstractExtractor
 class FileExtractor(AbstractExtractor):
 
     def extract(self):
-        self._set_extraction_timestamp()
+        self.set_extraction_timestamp()
 
     def unify(self):
         raise NotImplementedError

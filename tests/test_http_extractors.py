@@ -66,5 +66,5 @@ def test_fill_batch_with_full_extractor(fxtr_extractor, fxtr_get_uri):
     batch.fill(extractor=full_extractor)
     assert batch.data == full_extractor.output['data']
     assert full_extractor.output['meta'] in batch.meta
-    assert 'extraction_timestamp' in batch.meta.keys()
+    assert batch.meta['extraction_timestamp'] is not None
 

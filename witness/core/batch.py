@@ -63,13 +63,13 @@ class Batch(AbstractBatch):
         Fills batch internal datastructures using
         the extractor passed in.
         """
-        if extractor.output is None:
-            extractor.extract()
 
-        if extractor.is_unified:
-            output = extractor.output
+        if extractor.output is not None:
+            if extractor.extraction_timestamp is None:
+                extractor.set_extraction_timestamp()
+            output = extractor.output if extractor.is_unified else extractor.unify().output
         else:
-            output = extractor.unify().output
+            output = extractor.extract().unify().output
         setattr(self, 'data', output['data'])
         setattr(self, 'meta', MetaData(**output['meta']))
         return self
