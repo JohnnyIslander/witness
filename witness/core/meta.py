@@ -42,12 +42,17 @@ class MetaData:
     records_extracted: int = 0
     is_restored: bool = False
 
-    def __init__(self, input_dict=None, **kwargs):
-        if input_dict:
-            for key, value in input_dict.items():
-                setattr(self, key, value)
+    def __init__(self, **kwargs):
         for key, value in kwargs.items():
             setattr(self, key, value)
+
+    def __repr__(self):
+        elements = []
+        for arg, value in self.__dict__.items():
+            element = f"{arg}={value}"
+            elements.append(element)
+
+        return f"MetaData({', '.join(elements)})"
 
     def __iter__(self):
         return MetaIterator(self)

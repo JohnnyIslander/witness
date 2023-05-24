@@ -31,7 +31,6 @@ collect_ignore = ["setup.py", "test_database_extractors.py"]
 batch_meta = {
     'extraction_timestamp': datetime.datetime(2022, 1, 1, 12, 0, 0, 0),
     'record_source': r'calibration_data',
-    'tags': ['debug', 'snapshot'],
     'data_interval_end': pendulum.datetime(2022, 2, 2, 13, 5, 0, 0)
 }
 

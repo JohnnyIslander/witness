@@ -36,7 +36,7 @@ def test_manual_add_to_meta(fxtr_batch):
 
 
 def test_meta_json_dump(fxtr_batch):
-    print(fxtr_batch.meta.__dict__)
+    print(fxtr_batch.meta)
     serialized_meta = json.dumps(fxtr_batch.meta, cls=MetaJSONEncoder)
     assert serialized_meta == fxtr_batch.meta.to_json()
 

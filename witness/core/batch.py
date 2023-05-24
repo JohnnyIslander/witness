@@ -47,13 +47,13 @@ class Batch(AbstractBatch):
         message = f"""
         Current number of records: {number_of_records}
         Was {'restored from dump ' + f"{self.meta.dump_uri}" if self.is_restored else 'originally extracted'}
-        Source: {getattr(self.meta, 'record_source')}
-        Extraction datetime: {getattr(self.meta, 'extraction_timestamp')}
+        Source: {self.meta.record_source}
+        Extraction datetime: {self.meta.extraction_timestamp}
         """
 
         try:
-            message = message + f"Tags: {getattr(self.meta, 'tags')}\n"
-        except KeyError:
+            message = message + f"Tags: {self.meta.tags}\n"
+        except AttributeError:
             pass
 
         return message
