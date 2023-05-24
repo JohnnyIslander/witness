@@ -5,6 +5,15 @@ import datetime
 from typing import Optional
 
 
+class MetaJSONEncoder(json.JSONEncoder):
+    def default(self, o):
+
+        if callable(getattr(o, "__json__", False)):
+            return o.__json__()
+        raise TypeError(f'Object of type {o.__class__.__name__} '
+                        f'is not JSON serializable')
+
+
 class MetaIterator:
 
     def __init__(self, meta_class):
@@ -79,11 +88,5 @@ class MetaData:
     def items(self):
         return self.__dict__.items()
 
-
-class CustomJSONEncoder(json.JSONEncoder):
-    def default(self, o):
-
-        if callable(getattr(o, "__json__", False)):
-            return o.__json__()
-        raise TypeError(f'Object of type {o.__class__.__name__} '
-                        f'is not JSON serializable')
+    def to_json(self):
+        return json.dumps(self, cls=MetaJSONEncoder)
