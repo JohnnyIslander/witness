@@ -1,5 +1,7 @@
 from dataclasses import dataclass, field
 import pendulum
+import json
+import datetime
 from typing import Optional
 
 
@@ -31,6 +33,13 @@ class MetaData:
     records_extracted: int = 0
     is_restored: bool = False
 
+    def __init__(self, input_dict=None, **kwargs):
+        if input_dict:
+            for key, value in input_dict.items():
+                setattr(self, key, value)
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
     def __iter__(self):
         return MetaIterator(self)
 
@@ -54,6 +63,13 @@ class MetaData:
             return item.items() <= self.__dict__.items()
         return False
 
+    def __json__(self):
+        obj_dict = self.__dict__.copy()
+        for k, v in obj_dict.items():
+            if isinstance(v, datetime.datetime):
+                obj_dict[k] = v.isoformat()
+        return obj_dict
+
     def keys(self):
         return self.__dict__.keys()
 
@@ -62,3 +78,12 @@ class MetaData:
 
     def items(self):
         return self.__dict__.items()
+
+
+class CustomJSONEncoder(json.JSONEncoder):
+    def default(self, o):
+
+        if callable(getattr(o, "__json__", False)):
+            return o.__json__()
+        raise TypeError(f'Object of type {o.__class__.__name__} '
+                        f'is not JSON serializable')

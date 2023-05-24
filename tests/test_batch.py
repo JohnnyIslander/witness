@@ -11,8 +11,9 @@
 #     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
+import json
 
-from witness import MetaData
+from witness import MetaData, CustomJSONEncoder
 from tests import conftest
 
 calibration_meta = conftest.batch_meta
@@ -33,4 +34,9 @@ def test_manual_add_to_meta(fxtr_batch):
         manual_constructed_meta[k] = v
     assert manual_constructed_meta == fxtr_batch.meta
 
+
+def test_meta_json_dump(fxtr_batch):
+    print(fxtr_batch.meta.__dict__)
+    serialized_meta = json.dumps(fxtr_batch.meta, cls=CustomJSONEncoder)
+    print(serialized_meta)
 

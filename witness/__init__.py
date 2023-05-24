@@ -13,7 +13,7 @@
 #     limitations under the License.
 
 from .core.batch import Batch
-from .core.meta import MetaData
+from .core.meta import MetaData, CustomJSONEncoder
 from . import version
 
 # Meta
