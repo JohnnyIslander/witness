@@ -42,14 +42,23 @@ class Batch(AbstractBatch):
         if self.meta is None and self.data is None:
             return 'Batch object is not containing any data.'
 
-        number_of_records = len(self.data) if self.data is not None else None
+        message = 'Batch INFO'
 
-        message = f"""
-        Current number of records: {number_of_records}
-        Was {'restored from dump ' + f"{self.meta.dump_uri}" if self.is_restored else 'originally extracted'}
-        Source: {self.meta.record_source}
-        Extraction datetime: {self.meta.extraction_timestamp}
-        """
+        if self.data is not None:
+            number_of_records = len(self.data)
+            data_msg = f"""
+            --Data--
+            Current number of records: {number_of_records}
+            """
+            message = message + data_msg
+
+        if self.meta is not None:
+            meta_msg = f"""--Meta--
+            Was {'restored from dump ' + f"{self.meta.dump_uri}" if self.is_restored else 'originally extracted'}
+            Source: {self.meta.record_source}
+            Extraction datetime: {self.meta.extraction_timestamp}
+            """
+            message = message + meta_msg
 
         try:
             message = message + f"Tags: {self.meta.tags}\n"
