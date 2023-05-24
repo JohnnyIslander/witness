@@ -26,7 +26,7 @@ class DatabaseExtractor(AbstractExtractor):
         super().__init__(uri)
 
     def extract(self):
-        self._set_extraction_timestamp()
+        self.set_extraction_timestamp()
 
     def unify(self):
         raise NotImplementedError

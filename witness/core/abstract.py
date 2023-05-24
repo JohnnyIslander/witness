@@ -49,7 +49,7 @@ class AbstractExtractor(metaclass=ABCMeta):
         self.serializer: Optional[AbstractSerializer] = None
         self.is_unified = False
 
-    def _set_extraction_timestamp(self):
+    def set_extraction_timestamp(self):
         setattr(self, 'extraction_timestamp', pendulum.now())
 
     def _set_unified_true(self):
