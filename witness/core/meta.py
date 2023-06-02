@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 import pendulum
 import json
 import datetime
-from typing import Optional
+from typing import Optional, Union
 
 
 class MetaJSONEncoder(json.JSONEncoder):
@@ -92,6 +92,20 @@ class MetaData:
 
     def items(self):
         return self.__dict__.items()
+
+    def update(self, other):
+        if isinstance(other, Union[dict, MetaData]):
+            for key, value in other.items():
+                setattr(self, key, value)
+        else:
+            try:
+                for key, value in other:
+                    setattr(self, key, value)
+            except (TypeError, ValueError):
+                raise ValueError(
+                    "Invalid argument for update: must be a dictionary or an iterable of key-value pairs.")
+
+        return None
 
     def to_json(self):
         return json.dumps(self, cls=MetaJSONEncoder)

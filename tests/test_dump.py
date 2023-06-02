@@ -22,21 +22,26 @@ calibration_data = conftest.batch_data
 def test_dump(fxtr_batch):
     fxtr_batch.dump(default_dump_uri)
 
+
 def test_dump_no_uri(fxtr_batch):
     fxtr_batch.dump()
     print(fxtr_batch.meta.dump_uri)
+
 
 def test_dump_to_dir(fxtr_batch):
     fxtr_batch.dump(files_dir)
     print(fxtr_batch.meta.dump_uri)
 
+
 def test_restore_no_uri(fxtr_batch):
     fxtr_batch.restore()
+
 
 def test_attached_meta_after_restore(fxtr_batch):
     fxtr_batch.restore(default_dump_uri)
     assert fxtr_batch.meta.extraction_timestamp == calibration_meta['extraction_timestamp']
     assert fxtr_batch.meta.record_source == calibration_meta['record_source']
+
 
 def test_persist(fxtr_batch):
     fxtr_batch.dump(default_dump_uri)
@@ -44,6 +49,7 @@ def test_persist(fxtr_batch):
     assert fxtr_batch.meta.record_source == calibration_meta['record_source']
     assert fxtr_batch.meta.extraction_timestamp == calibration_meta['extraction_timestamp']
     assert fxtr_batch.meta.dump_uri == default_dump_uri
+
 
 def test_render_dump_name(fxtr_batch, fxtr_record_source):
     fxtr_batch.meta.record_source = fxtr_record_source
