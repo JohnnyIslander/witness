@@ -20,6 +20,7 @@ from witness import Batch
 
 httpretty.enable(verbose=True, allow_net_connect=False)
 
+
 def register_fxtr_uri(fxtr):
     httpretty.register_uri(
         method=httpretty.GET,
@@ -28,6 +29,7 @@ def register_fxtr_uri(fxtr):
         status=fxtr['status'],
         content_type=fxtr['content_type']
     )
+
 
 @httpretty.activate
 def test_extract(fxtr_extractor, fxtr_get_uri):

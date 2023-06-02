@@ -17,6 +17,6 @@ from tests import conftest
 calibration_meta = conftest.batch_meta
 calibration_data = conftest.batch_data
 
+
 def test_info(fxtr_batch):
     print(fxtr_batch.info())
-

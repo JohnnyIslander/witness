@@ -12,6 +12,8 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
 
+import shutil
+import os
 from tests import files_dir, conftest
 
 default_dump_uri = f'{files_dir}/std_dump'
@@ -30,6 +32,13 @@ def test_dump_no_uri(fxtr_batch):
 
 def test_dump_to_dir(fxtr_batch):
     fxtr_batch.dump(files_dir)
+    print(fxtr_batch.meta.dump_uri)
+
+
+def test_dump_to_nonexisting_dir(fxtr_batch, fxtr_dump_uris):
+    fxtr_batch.dump(fxtr_dump_uris)
+    dump_dir, _ = os.path.split(fxtr_dump_uris)
+    shutil.rmtree(dump_dir)
     print(fxtr_batch.meta.dump_uri)
 
 

@@ -19,6 +19,20 @@ import pickle
 import os
 
 
+def create_dir(path):
+
+    if not os.path.isdir(path):
+        path, tail = os.path.split(path)
+
+    try:
+        os.makedirs(path)
+        print(f'A directory created by given path: {path}')
+        return path
+    except FileExistsError:
+        print(f'Directory is already exists: {path}')
+        return None
+
+
 class Batch(AbstractBatch):
     """
     Central class of entire lib.
@@ -117,6 +131,8 @@ class Batch(AbstractBatch):
             dump_uri = f'{uri}/{self.render_dump_name()}'
         else:
             dump_uri = uri
+
+        create_dir(dump_uri)
 
         with open(dump_uri, 'wb') as file:
             pickle.dump(self.data, file)
