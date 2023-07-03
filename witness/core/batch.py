@@ -19,6 +19,20 @@ import pickle
 import os
 
 
+def create_dir(path):
+
+    if not os.path.isdir(path):
+        path, tail = os.path.split(path)
+
+    try:
+        os.makedirs(path)
+        print(f'A directory created by given path: {path}')
+        return path
+    except FileExistsError:
+        print(f'Directory is already exists: {path}')
+        return None
+
+
 class Batch(AbstractBatch):
     """
     Central class of entire lib.
@@ -42,18 +56,27 @@ class Batch(AbstractBatch):
         if self.meta is None and self.data is None:
             return 'Batch object is not containing any data.'
 
-        number_of_records = len(self.data) if self.data is not None else None
+        message = 'Batch INFO'
 
-        message = f"""
-        Current number of records: {number_of_records}
-        Was {'restored from dump ' + f"{self.meta.dump_uri}" if self.is_restored else 'originally extracted'}
-        Source: {getattr(self.meta, 'record_source')}
-        Extraction datetime: {getattr(self.meta, 'extraction_timestamp')}
-        """
+        if self.data is not None:
+            number_of_records = len(self.data)
+            data_msg = f"""
+            --Data--
+            Current number of records: {number_of_records}
+            """
+            message = message + data_msg
+
+        if self.meta is not None:
+            meta_msg = f"""--Meta--
+            Was {'restored from dump ' + f"{self.meta.dump_uri}" if self.is_restored else 'originally extracted'}
+            Source: {self.meta.record_source}
+            Extraction datetime: {self.meta.extraction_timestamp}
+            """
+            message = message + meta_msg
 
         try:
-            message = message + f"Tags: {getattr(self.meta, 'tags')}\n"
-        except KeyError:
+            message = message + f"Tags: {self.meta.tags}\n"
+        except AttributeError:
             pass
 
         return message
@@ -108,6 +131,8 @@ class Batch(AbstractBatch):
             dump_uri = f'{uri}/{self.render_dump_name()}'
         else:
             dump_uri = uri
+
+        create_dir(dump_uri)
 
         with open(dump_uri, 'wb') as file:
             pickle.dump(self.data, file)

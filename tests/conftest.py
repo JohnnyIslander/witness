@@ -31,7 +31,6 @@ collect_ignore = ["setup.py", "test_database_extractors.py"]
 batch_meta = {
     'extraction_timestamp': datetime.datetime(2022, 1, 1, 12, 0, 0, 0),
     'record_source': r'calibration_data',
-    'tags': ['debug', 'snapshot'],
     'data_interval_end': pendulum.datetime(2022, 2, 2, 13, 5, 0, 0)
 }
 
@@ -52,6 +51,11 @@ loaders = [
 ]
 
 
+dump_uris = [
+    f'{files_dir}/test/test_subdir/dump',
+    f'{files_dir}/test/test_subdir/test_subdir/dump'
+]
+
 http_get_uris = [
     {'uri': 'http://foo-api.com/data', 'body': '{"success": true}', 'status': 200, 'content_type': 'text/json'},
     {'uri': 'http://foo-api.com/data', 'body': '{"success": true}', 'status': 200, 'content_type': 'text/xml'}
@@ -64,8 +68,8 @@ record_sources = [
     '1C_PowerBI_EX.dbo.VMTP_DC_VesselVoyage',
     'single_file',
     'single_file_with_extension.txt',
-    'http://vld-web08.hq.fesco.com/api/power-bi/vessel-processing',
-    r'\\vld-fs01\work\КД\Общие файлы КД\ИАЦ\1. Прогнозирование\Планы и факты\2023\План КД 2023 Бюджет.xlsx'
+    'http://smwhr-web08.hq.moronic.com/api/power-bi/processing',
+    r'\\smwhr-fs01\work\Общие файлы\ПЭО\1. Прогнозирование\Планы и факты\2023\План 2023 Бюджет.xlsx'
 ]
 
 
@@ -108,4 +112,9 @@ def fxtr_web_serializer(request):
 
 @pytest.fixture(params=record_sources)
 def fxtr_record_source(request):
+    yield request.param
+
+
+@pytest.fixture(params=dump_uris)
+def fxtr_dump_uris(request):
     yield request.param
