@@ -55,6 +55,7 @@ class Batch(AbstractBatch):
             self.records_count()
         else:
             self.meta: Optional[MetaData] = None
+
         self.is_restored = False
 
     def __repr__(self):
@@ -148,7 +149,7 @@ class Batch(AbstractBatch):
         self._register_dump(dump_uri)
         return dump_uri
 
-    def restore(self, uri: Optional[str] = None):
+    def restore(self, uri: Optional[str] = None, clear_dump=False):
         """
         Fills batch with data from dump.
         If no dump uri provided it'll try search in batch meta.
@@ -159,6 +160,11 @@ class Batch(AbstractBatch):
         setattr(self, 'data', output)
         self.meta.is_restored = True
         self.records_count()
+
+        if clear_dump:
+            pass
+            os.remove(self.meta.dump_uri)
+
         return self
 
     def records_count(self):

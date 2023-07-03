@@ -35,6 +35,12 @@ def test_restore_no_uri(fxtr_batch):
     fxtr_batch.restore()
 
 
+def test_clear_dump_after_restoration(fxtr_batch):
+    fxtr_batch.dump()
+    fxtr_batch.restore(clear_dump=True)
+    assert not os.path.exists(fxtr_batch.meta.dump_uri)
+
+
 def test_dump_to_dir(fxtr_batch):
     fxtr_batch.dump(files_dir)
     print(fxtr_batch.meta.dump_uri)
@@ -45,7 +51,6 @@ def test_dump_to_nonexisting_dir(fxtr_batch, fxtr_dump_uris):
     dump_dir, _ = os.path.split(fxtr_dump_uris)
     shutil.rmtree(dump_dir)
     print(fxtr_batch.meta.dump_uri)
-
 
 
 def test_new_batch_from_restore(fxtr_batch, fxtr_dump_uris):
