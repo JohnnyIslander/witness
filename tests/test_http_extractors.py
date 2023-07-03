@@ -60,7 +60,7 @@ def test_unify(fxtr_extractor, fxtr_get_uri):
 def test_fill_batch_with_full_extractor(fxtr_extractor, fxtr_get_uri):
     register_fxtr_uri(fxtr_get_uri)
     full_extractor = fxtr_extractor(uri=fxtr_get_uri['uri']).extract()
-    assert full_extractor.is_unified == False
+    assert not full_extractor.is_unified
     full_extractor.unify()
     assert full_extractor.output is not None
     print(full_extractor.output)

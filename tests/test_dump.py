@@ -15,6 +15,7 @@
 import shutil
 import os
 from tests import files_dir, conftest
+from witness import Batch
 
 default_dump_uri = f'{files_dir}/std_dump'
 calibration_meta = conftest.batch_meta
@@ -44,6 +45,14 @@ def test_dump_to_nonexisting_dir(fxtr_batch, fxtr_dump_uris):
 
 def test_restore_no_uri(fxtr_batch):
     fxtr_batch.restore()
+
+
+def test_new_batch_from_restore(fxtr_batch, fxtr_dump_uris):
+    fxtr_batch.dump(fxtr_dump_uris)
+    print(fxtr_batch.meta.dump_uri)
+    meta = fxtr_batch.meta
+    new_batch = Batch(meta=meta).restore()
+    assert new_batch.data == fxtr_batch.data
 
 
 def test_attached_meta_after_restore(fxtr_batch):
