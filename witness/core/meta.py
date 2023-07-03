@@ -39,7 +39,7 @@ class MetaData:
     extraction_timestamp: Optional[pendulum.DateTime] = None
     tags: Optional[list] = field(default_factory=list)
     dump_uri: Optional[str] = ''
-    records_extracted: int = 0
+    records_extracted: Optional[int] = 0
     is_restored: bool = False
 
     def __init__(self, **kwargs):

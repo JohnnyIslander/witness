@@ -1,8 +1,8 @@
 
 # essential
-requests>=2.0.0
+requests~=2.28.0
 pyyaml>=6.0
-pyarrow>=10.0.0
+pyarrow~=12.0.0
 pendulum~=2.1.0
 
 # additional
@@ -11,7 +11,6 @@ pandas~=1.4.0,<2.0
 SQLAlchemy~=1.4.0,<2.0
 pyodbc==4.0.34
 openpyxl~=3.0.9
-tabula-py~=2.7.0
 
 # dev
 pytest>=7.0.0

@@ -24,6 +24,8 @@ def create_dir(path):
     if not os.path.isdir(path):
         path, tail = os.path.split(path)
 
+    path = './' if path == '' else path
+
     try:
         os.makedirs(path)
         print(f'A directory created by given path: {path}')
@@ -45,7 +47,14 @@ class Batch(AbstractBatch):
     def __init__(self, data=None, meta=None):
 
         self.data: Optional[list] = data
-        self.meta: Optional[MetaData] = MetaData(**meta) if meta is not None else None
+
+        if meta is not None:
+            self.meta: Optional[MetaData] = MetaData(**meta)
+        elif self.data is not None:
+            self.meta: Optional[MetaData] = MetaData()
+            self.records_count()
+        else:
+            self.meta: Optional[MetaData] = None
         self.is_restored = False
 
     def __repr__(self):
@@ -59,7 +68,7 @@ class Batch(AbstractBatch):
         message = 'Batch INFO'
 
         if self.data is not None:
-            number_of_records = len(self.data)
+            number_of_records = self.records_count()
             data_msg = f"""
             --Data--
             Current number of records: {number_of_records}
@@ -95,6 +104,7 @@ class Batch(AbstractBatch):
             output = extractor.extract().unify().output
         setattr(self, 'data', output['data'])
         setattr(self, 'meta', MetaData(**output['meta']))
+        self.records_count()
         return self
 
     def push(self, loader, meta_elements: Optional[list[str]] = None):
@@ -131,7 +141,6 @@ class Batch(AbstractBatch):
             dump_uri = f'{uri}/{self.render_dump_name()}'
         else:
             dump_uri = uri
-
         create_dir(dump_uri)
 
         with open(dump_uri, 'wb') as file:
@@ -149,4 +158,14 @@ class Batch(AbstractBatch):
             output = pickle.load(file)
         setattr(self, 'data', output)
         self.meta.is_restored = True
+        self.records_count()
         return self
+
+    def records_count(self):
+        if self.data is not None:
+            count = len(self.data)
+        else:
+            count = None
+
+        setattr(self.meta, 'records_extracted', count)
+        return count

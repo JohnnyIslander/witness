@@ -40,6 +40,10 @@ batch_data = [
     {'string': 'string_value_3', 'integer': 7634, 'timestamp': datetime.datetime(2031, 2, 5, 15, 43, 0, 0)}
 ]
 
+batch_blueprints = [
+    {'data': batch_data, 'meta': batch_meta}
+]
+
 batches = [
     Batch(data=batch_data, meta=batch_meta)
 ]
@@ -85,9 +89,10 @@ web_serializers = [
 # endregion mock
 
 
-@pytest.fixture(params=batches)
+@pytest.fixture(params=batch_blueprints, scope='module')
 def fxtr_batch(request):
-    yield request.param
+    batch = Batch(request.param['data'], request.param['meta'])
+    yield batch
 
 
 @pytest.fixture(params=loaders)

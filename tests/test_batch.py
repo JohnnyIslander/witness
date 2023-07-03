@@ -12,6 +12,7 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
 
+from witness import Batch, MetaData
 from tests import conftest
 
 calibration_meta = conftest.batch_meta
@@ -20,3 +21,8 @@ calibration_data = conftest.batch_data
 
 def test_info(fxtr_batch):
     print(fxtr_batch.info())
+
+
+def test_auto_creating_meta():
+    batch = Batch(calibration_data)
+    assert isinstance(batch.meta, MetaData)
