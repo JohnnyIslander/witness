@@ -17,7 +17,7 @@ import os
 from tests import files_dir, conftest
 from witness import Batch
 
-default_dump_uri = f'{files_dir}/std_dump'
+default_dump_uri = f"{files_dir}/std_dump"
 calibration_meta = conftest.batch_meta
 calibration_data = conftest.batch_data
 
@@ -63,15 +63,19 @@ def test_new_batch_from_restore(fxtr_batch, fxtr_dump_uris):
 
 def test_attached_meta_after_restore(fxtr_batch):
     fxtr_batch.restore(default_dump_uri)
-    assert fxtr_batch.meta.extraction_timestamp == calibration_meta['extraction_timestamp']
-    assert fxtr_batch.meta.record_source == calibration_meta['record_source']
+    assert (
+        fxtr_batch.meta.extraction_timestamp == calibration_meta["extraction_timestamp"]
+    )
+    assert fxtr_batch.meta.record_source == calibration_meta["record_source"]
 
 
 def test_persist(fxtr_batch):
     fxtr_batch.dump(default_dump_uri)
     fxtr_batch.restore()
-    assert fxtr_batch.meta.record_source == calibration_meta['record_source']
-    assert fxtr_batch.meta.extraction_timestamp == calibration_meta['extraction_timestamp']
+    assert fxtr_batch.meta.record_source == calibration_meta["record_source"]
+    assert (
+        fxtr_batch.meta.extraction_timestamp == calibration_meta["extraction_timestamp"]
+    )
     assert fxtr_batch.meta.dump_uri == default_dump_uri
 
 

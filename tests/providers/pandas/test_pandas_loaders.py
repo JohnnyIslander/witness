@@ -1,4 +1,3 @@
-
 #  Copyright (c) 2022.  Eugene Popov.
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,9 +39,8 @@ def test_load_meta_attached(fxtr_loader, fxtr_batch):
 
 
 def test_load_chosen_meta_attached(fxtr_loader, fxtr_batch):
-    fxtr_loader.prepare(fxtr_batch).attach_meta(['record_source']).load()
+    fxtr_loader.prepare(fxtr_batch).attach_meta(["record_source"]).load()
 
 
-if __name__ == '__main__':
-
+if __name__ == "__main__":
     pytest.main()

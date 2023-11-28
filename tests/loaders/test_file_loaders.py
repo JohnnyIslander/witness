@@ -1,4 +1,4 @@
-#  Copyright (c) 2022.  Eugene Popov.
+#  Copyright (c) 2023.  Eugene Popov.
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #     you may not use this file except in compliance with the License.
@@ -12,17 +12,12 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
 
-from witness import Batch, MetaData
-from tests import conftest
+import pytest
+from witness.loaders import JSONFileLoader
 
-calibration_meta = conftest.batch_meta
-calibration_data = conftest.batch_data
-
-
-def test_info(fxtr_batch):
-    print(fxtr_batch.info())
+xfail = pytest.mark.xfail
 
 
-def test_auto_creating_meta():
-    batch = Batch(calibration_data)
-    assert isinstance(batch.meta, MetaData)
+def test_prepare(fxtr_batch, fxtr_load_uri):
+    loader = JSONFileLoader(uri=fxtr_load_uri)
+    loader.prepare(batch=fxtr_batch)
