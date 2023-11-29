@@ -87,14 +87,14 @@ class PandasExtractor(AbstractExtractor):
     output: pd.DataFrame
 
     def extract(self):
-        self.set_extraction_timestamp()
+        super().extract()
         return self
 
     def unify(self):
         data = self.serializer.to_batch(self.output)
         meta = {
             "extraction_timestamp": self.extraction_timestamp,
-            "record_source": self.uri,
+            "record_source": self.record_source,
         }
 
         setattr(self, "output", {"meta": meta, "data": data})

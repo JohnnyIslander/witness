@@ -61,10 +61,10 @@ class Batch(AbstractBatch):
     def __repr__(self):
         return '{}(meta={}, data={})'.format(self.__class__.__name__, self.meta, self.data)
 
-    def info(self):
+    def info(self, print_output=False):
 
         if self.meta is None and self.data is None:
-            return 'Batch object is not containing any data.'
+            return 'Batch object does not contain any data or meta.'
 
         message = 'Batch INFO'
 
@@ -74,7 +74,9 @@ class Batch(AbstractBatch):
             --Data--
             Current number of records: {number_of_records}
             """
-            message = message + data_msg
+
+        else:
+            data_msg = 'Batch object does not contain any data.'
 
         if self.meta is not None:
             meta_msg = f"""--Meta--
@@ -82,12 +84,18 @@ class Batch(AbstractBatch):
             Source: {self.meta.record_source}
             Extraction datetime: {self.meta.extraction_timestamp}
             """
-            message = message + meta_msg
+        else:
+            meta_msg = 'Batch object has not any attached meta.'
+
+        message = message + data_msg + meta_msg
 
         try:
             message = message + f"Tags: {self.meta.tags}\n"
         except AttributeError:
             pass
+
+        if print_output:
+            print(message)
 
         return message
 
