@@ -13,11 +13,17 @@
 #     limitations under the License.
 
 import pytest
+import json
 from witness.loaders import JSONFileLoader
+from witness.serializers.common import CustomJSONEncoder
 
 xfail = pytest.mark.xfail
 
 
 def test_prepare(fxtr_batch, fxtr_load_uri):
     loader = JSONFileLoader(uri=fxtr_load_uri)
+    print(fxtr_batch.data)
+    json_fxtr_batch_data = json.dumps(fxtr_batch.data, cls=CustomJSONEncoder)
+    print(json_fxtr_batch_data)
     loader.prepare(batch=fxtr_batch)
+    assert loader.output == json_fxtr_batch_data

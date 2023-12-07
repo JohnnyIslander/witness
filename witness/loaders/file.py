@@ -14,16 +14,20 @@
 
 from typing import Optional
 from witness.core.abstract import AbstractLoader, AbstractSerializer
+from witness.serializers.common import JsonSerializer
 
 
 class JSONFileLoader(AbstractLoader):
 
-    def __init__(self, uri, serializer: Optional[AbstractSerializer] = None):
+    def __init__(self, uri, serializer: Optional[AbstractSerializer] = JsonSerializer()):
         super().__init__(uri)
         self.serializer = serializer
 
     def prepare(self, batch):
         super().prepare(batch)
+        output = self.serializer.from_batch(batch.data)
+        self.output = output
+        return self
 
     def attach_meta(self, meta_elements: Optional[list] = None):
         super().attach_meta(meta_elements)

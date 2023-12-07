@@ -16,6 +16,14 @@
 
 from witness.core.abstract import AbstractSerializer
 import json
+import datetime
+
+
+class CustomJSONEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, datetime.datetime):
+            return o.isoformat()
+        return super().default(o)
 
 
 class JsonSerializer(AbstractSerializer):
@@ -25,6 +33,6 @@ class JsonSerializer(AbstractSerializer):
         return data
 
     def from_batch(self, data, *args, **kwargs):
-        raw = json.dumps(data)
+        raw = json.dumps(data, cls=CustomJSONEncoder)
         return raw
 

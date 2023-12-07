@@ -18,7 +18,8 @@ import datetime
 import pendulum
 from witness.core.batch import Batch
 from witness.extractors.http import HttpGetExtractor, JsonHttpGetExtractor
-from witness.serializers.http import JsonSerializer
+from witness.loaders.file import JSONFileLoader
+from witness.serializers.common import JsonSerializer
 from witness.providers.pandas.loaders import PandasFeatherLoader, PandasExcelLoader
 from witness.providers.pandas.extractors import PandasExcelExtractor, PandasFeatherExtractor
 
@@ -100,11 +101,12 @@ file_extractors = [
 web_serializers = [JsonSerializer]
 
 # region loaders
-file_loaders = [
-    PandasFeatherLoader(f"{files_dir}/feather_dump"),
-    PandasExcelLoader(f"{files_dir}/excel_dump.xlsx"),
-]
+
 # endregion loaders
+
+file_loaders = [
+    JSONFileLoader
+]
 
 # endregion mock
 
@@ -113,11 +115,6 @@ file_loaders = [
 def fxtr_batch(request):
     batch = Batch(request.param["data"], request.param["meta"])
     yield batch
-
-
-@pytest.fixture(params=file_loaders)
-def fxtr_loader(request):
-    yield request.param
 
 
 @pytest.fixture(params=http_get_uris)
@@ -132,6 +129,11 @@ def fxtr_http_extractor(request):
 
 @pytest.fixture(params=file_extractors)
 def fxtr_file_extractor(request):
+    yield request.param
+
+
+@pytest.fixture(params=file_loaders)
+def fxtr_file_loader(request):
     yield request.param
 
 
@@ -153,3 +155,18 @@ def fxtr_record_source(request):
 @pytest.fixture(params=dump_uris)
 def fxtr_dump_uris(request):
     yield request.param
+
+
+# region Pandas specific
+
+pandas_loaders = [
+    PandasFeatherLoader(f"{files_dir}/feather_dump"),
+    PandasExcelLoader(f"{files_dir}/excel_dump.xlsx"),
+]
+
+
+@pytest.fixture(params=pandas_loaders)
+def fxtr_pandas_loader(request):
+    yield request.param
+
+# endregion Pandas specific
