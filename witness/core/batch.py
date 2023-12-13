@@ -24,6 +24,8 @@ def create_dir(path):
     if not os.path.isdir(path):
         path, tail = os.path.split(path)
 
+    path = './' if path == '' else path
+
     try:
         os.makedirs(path)
         print(f'A directory created by given path: {path}')
@@ -45,26 +47,36 @@ class Batch(AbstractBatch):
     def __init__(self, data=None, meta=None):
 
         self.data: Optional[list] = data
-        self.meta: Optional[MetaData] = MetaData(**meta) if meta is not None else None
+
+        if meta is not None:
+            self.meta: Optional[MetaData] = MetaData(**meta)
+        elif self.data is not None:
+            self.meta: Optional[MetaData] = MetaData()
+            self.records_count()
+        else:
+            self.meta: Optional[MetaData] = None
+
         self.is_restored = False
 
     def __repr__(self):
         return '{}(meta={}, data={})'.format(self.__class__.__name__, self.meta, self.data)
 
-    def info(self):
+    def info(self, print_output=False):
 
         if self.meta is None and self.data is None:
-            return 'Batch object is not containing any data.'
+            return 'Batch object does not contain any data or meta.'
 
         message = 'Batch INFO'
 
         if self.data is not None:
-            number_of_records = len(self.data)
+            number_of_records = self.records_count()
             data_msg = f"""
             --Data--
             Current number of records: {number_of_records}
             """
-            message = message + data_msg
+
+        else:
+            data_msg = 'Batch object does not contain any data.'
 
         if self.meta is not None:
             meta_msg = f"""--Meta--
@@ -72,12 +84,18 @@ class Batch(AbstractBatch):
             Source: {self.meta.record_source}
             Extraction datetime: {self.meta.extraction_timestamp}
             """
-            message = message + meta_msg
+        else:
+            meta_msg = 'Batch object has not any attached meta.'
+
+        message = message + data_msg + meta_msg
 
         try:
             message = message + f"Tags: {self.meta.tags}\n"
         except AttributeError:
             pass
+
+        if print_output:
+            print(message)
 
         return message
 
@@ -95,6 +113,7 @@ class Batch(AbstractBatch):
             output = extractor.extract().unify().output
         setattr(self, 'data', output['data'])
         setattr(self, 'meta', MetaData(**output['meta']))
+        self.records_count()
         return self
 
     def push(self, loader, meta_elements: Optional[list[str]] = None):
@@ -131,7 +150,6 @@ class Batch(AbstractBatch):
             dump_uri = f'{uri}/{self.render_dump_name()}'
         else:
             dump_uri = uri
-
         create_dir(dump_uri)
 
         with open(dump_uri, 'wb') as file:
@@ -139,7 +157,7 @@ class Batch(AbstractBatch):
         self._register_dump(dump_uri)
         return dump_uri
 
-    def restore(self, uri: Optional[str] = None):
+    def restore(self, uri: Optional[str] = None, clear_dump=False):
         """
         Fills batch with data from dump.
         If no dump uri provided it'll try search in batch meta.
@@ -149,4 +167,19 @@ class Batch(AbstractBatch):
             output = pickle.load(file)
         setattr(self, 'data', output)
         self.meta.is_restored = True
+        self.records_count()
+
+        if clear_dump:
+            pass
+            os.remove(self.meta.dump_uri)
+
         return self
+
+    def records_count(self):
+        if self.data is not None:
+            count = len(self.data)
+        else:
+            count = None
+
+        setattr(self.meta, 'records_extracted', count)
+        return count

@@ -1,4 +1,3 @@
-
 #  Copyright (c) 2022.  Eugene Popov.
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,31 +17,30 @@ import pytest
 xfail = pytest.mark.xfail
 
 
-def test_prepare(fxtr_loader, fxtr_batch):
-    fxtr_loader.prepare(fxtr_batch)
+def test_prepare(fxtr_pandas_loader, fxtr_batch):
+    fxtr_pandas_loader.prepare(fxtr_batch)
 
 
 @xfail
-def test_attach_meta_no_batch(fxtr_loader):
-    fxtr_loader.attach_meta()
+def test_attach_meta_no_batch(fxtr_pandas_loader):
+    fxtr_pandas_loader.attach_meta()
 
 
-def test_attach_meta(fxtr_loader, fxtr_batch):
-    fxtr_loader.prepare(fxtr_batch).attach_meta()
+def test_attach_meta(fxtr_pandas_loader, fxtr_batch):
+    fxtr_pandas_loader.prepare(fxtr_batch).attach_meta()
 
 
-def test_load(fxtr_loader, fxtr_batch):
-    fxtr_loader.prepare(fxtr_batch).load()
+def test_load(fxtr_pandas_loader, fxtr_batch):
+    fxtr_pandas_loader.prepare(fxtr_batch).load()
 
 
-def test_load_meta_attached(fxtr_loader, fxtr_batch):
-    fxtr_loader.prepare(fxtr_batch).attach_meta().load()
+def test_load_meta_attached(fxtr_pandas_loader, fxtr_batch):
+    fxtr_pandas_loader.prepare(fxtr_batch).attach_meta().load()
 
 
-def test_load_chosen_meta_attached(fxtr_loader, fxtr_batch):
-    fxtr_loader.prepare(fxtr_batch).attach_meta(['record_source']).load()
+def test_load_chosen_meta_attached(fxtr_pandas_loader, fxtr_batch):
+    fxtr_pandas_loader.prepare(fxtr_batch).attach_meta(["record_source"]).load()
 
 
-if __name__ == '__main__':
-
+if __name__ == "__main__":
     pytest.main()

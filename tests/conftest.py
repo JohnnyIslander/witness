@@ -18,8 +18,10 @@ import datetime
 import pendulum
 from witness.core.batch import Batch
 from witness.extractors.http import HttpGetExtractor, JsonHttpGetExtractor
-from witness.serializers.http import JsonSerializer
+from witness.loaders.file import JSONFileLoader
+from witness.serializers.common import JsonSerializer
 from witness.providers.pandas.loaders import PandasFeatherLoader, PandasExcelLoader
+from witness.providers.pandas.extractors import PandasExcelExtractor, PandasFeatherExtractor
 
 xfail = pytest.mark.xfail
 parametrize = pytest.mark.parametrize
@@ -29,70 +31,90 @@ collect_ignore = ["setup.py", "test_database_extractors.py"]
 # region mock
 
 batch_meta = {
-    'extraction_timestamp': datetime.datetime(2022, 1, 1, 12, 0, 0, 0),
-    'record_source': r'calibration_data',
-    'data_interval_end': pendulum.datetime(2022, 2, 2, 13, 5, 0, 0)
+    "extraction_timestamp": datetime.datetime(2022, 1, 1, 12, 0, 0, 0),
+    "record_source": r"calibration_data",
+    "data_interval_end": pendulum.datetime(2022, 2, 2, 13, 5, 0, 0),
 }
 
 batch_data = [
-    {'string': 'string_value_1', 'integer': 31, 'timestamp': datetime.datetime(2022, 6, 15, 11, 0, 0, 0)},
-    {'string': 'string_value_2', 'integer': 14561, 'timestamp': datetime.datetime(2001, 4, 13, 12, 0, 0, 0)},
-    {'string': 'string_value_3', 'integer': 7634, 'timestamp': datetime.datetime(2031, 2, 5, 15, 43, 0, 0)}
+    {
+        "string": "string_value_1",
+        "integer": 31,
+        "timestamp": datetime.datetime(2022, 6, 15, 11, 0, 0, 0),
+    },
+    {
+        "string": "string_value_2",
+        "integer": 14561,
+        "timestamp": datetime.datetime(2001, 4, 13, 12, 0, 0, 0),
+    },
+    {
+        "string": "string_value_3",
+        "integer": 7634,
+        "timestamp": datetime.datetime(2031, 2, 5, 15, 43, 0, 0),
+    },
 ]
 
-batches = [
-    Batch(data=batch_data, meta=batch_meta)
-]
+batch_blueprints = [{"data": batch_data, "meta": batch_meta}]
 
-
-loaders = [
-    PandasFeatherLoader(f'{files_dir}/feather_dump'),
-    PandasExcelLoader(f'{files_dir}/excel_dump.xlsx')
-]
-
+batches = [Batch(data=batch_data, meta=batch_meta)]
 
 dump_uris = [
-    f'{files_dir}/test/test_subdir/dump',
-    f'{files_dir}/test/test_subdir/test_subdir/dump'
+    f"{files_dir}/test/test_subdir/dump",
+    f"{files_dir}/test/test_subdir/test_subdir/dump",
 ]
 
+file_load_uris = [f"{files_dir}/loads/output_file"]
 http_get_uris = [
-    {'uri': 'http://foo-api.com/data', 'body': '{"success": true}', 'status': 200, 'content_type': 'text/json'},
-    {'uri': 'http://foo-api.com/data', 'body': '{"success": true}', 'status': 200, 'content_type': 'text/xml'}
+    {
+        "uri": "http://foo-api.com/data",
+        "body": '{"success": true}',
+        "status": 200,
+        "content_type": "text/json",
+    },
+    {
+        "uri": "http://foo-api.com/data",
+        "body": '{"success": true}',
+        "status": 200,
+        "content_type": "text/xml",
+    },
 ]
 
 record_sources = [
-    'http://foo-api.com/data',
-    '/home/user/file.txt',
-    r'C:\User\Documents\config.ini',
-    '1C_PowerBI_EX.dbo.VMTP_DC_VesselVoyage',
-    'single_file',
-    'single_file_with_extension.txt',
-    'http://smwhr-web08.hq.moronic.com/api/power-bi/processing',
-    r'\\smwhr-fs01\work\Общие файлы\ПЭО\1. Прогнозирование\Планы и факты\2023\План 2023 Бюджет.xlsx'
+    "http://foo-api.com/data",
+    "/home/user/file.txt",
+    r"C:\User\Documents\config.ini",
+    "1C_PowerBI_EX.dbo.VMTP_DC_VesselVoyage",
+    "single_file",
+    "single_file_with_extension.txt",
+    "http://smwhr-web08.hq.moronic.com/api/power-bi/processing",
+    r"\\smwhr-fs01\work\Общие файлы\ПЭО\1. Прогнозирование\Планы и факты\2023\План 2023 Бюджет.xlsx",
 ]
 
-
-extractors = [
-    HttpGetExtractor,
-    JsonHttpGetExtractor
+# region extractors
+http_extractors = [HttpGetExtractor, JsonHttpGetExtractor]
+file_extractors = [
+    PandasExcelExtractor(f"{files_dir}/excel_dump.xlsx"),
+    PandasFeatherExtractor(f"{files_dir}/feather_dump")
 ]
+# endregion extractors
 
-web_serializers = [
-    JsonSerializer
+web_serializers = [JsonSerializer]
+
+# region loaders
+
+# endregion loaders
+
+file_loaders = [
+    JSONFileLoader
 ]
 
 # endregion mock
 
 
-@pytest.fixture(params=batches)
+@pytest.fixture(params=batch_blueprints, scope="module")
 def fxtr_batch(request):
-    yield request.param
-
-
-@pytest.fixture(params=loaders)
-def fxtr_loader(request):
-    yield request.param
+    batch = Batch(request.param["data"], request.param["meta"])
+    yield batch
 
 
 @pytest.fixture(params=http_get_uris)
@@ -100,13 +122,28 @@ def fxtr_get_uri(request):
     yield request.param
 
 
-@pytest.fixture(params=extractors)
-def fxtr_extractor(request):
+@pytest.fixture(params=http_extractors)
+def fxtr_http_extractor(request):
+    yield request.param
+
+
+@pytest.fixture(params=file_extractors)
+def fxtr_file_extractor(request):
+    yield request.param
+
+
+@pytest.fixture(params=file_loaders)
+def fxtr_file_loader(request):
     yield request.param
 
 
 @pytest.fixture(params=web_serializers)
 def fxtr_web_serializer(request):
+    yield request.param
+
+
+@pytest.fixture(params=file_load_uris)
+def fxtr_load_uri(request):
     yield request.param
 
 
@@ -118,3 +155,18 @@ def fxtr_record_source(request):
 @pytest.fixture(params=dump_uris)
 def fxtr_dump_uris(request):
     yield request.param
+
+
+# region Pandas specific
+
+pandas_loaders = [
+    PandasFeatherLoader(f"{files_dir}/feather_dump"),
+    PandasExcelLoader(f"{files_dir}/excel_dump.xlsx"),
+]
+
+
+@pytest.fixture(params=pandas_loaders)
+def fxtr_pandas_loader(request):
+    yield request.param
+
+# endregion Pandas specific

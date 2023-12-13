@@ -1,4 +1,3 @@
-
 #  Copyright (c) 2022.  Eugene Popov.
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,24 +14,27 @@
 
 
 from tests import temp_dir, parametrize
-from witness.providers.pandas.extractors import PandasFeatherExtractor, PandasExcelExtractor
+from witness.providers.pandas.extractors import (
+    PandasFeatherExtractor,
+    PandasExcelExtractor,
+)
 
 # region mock
-files_dir = f'{temp_dir}/files'
+files_dir = f"{temp_dir}/files"
 mock_params = [
-    (PandasFeatherExtractor, f'{files_dir}/feather_dump'),
-    (PandasExcelExtractor, f'{files_dir}/excel_dump.xlsx')
+    (PandasFeatherExtractor, f"{files_dir}/feather_dump"),
+    (PandasExcelExtractor, f"{files_dir}/excel_dump.xlsx"),
 ]
 # endregion mock
 
 
-@parametrize('extractor, uri', mock_params)
+@parametrize("extractor, uri", mock_params)
 def test_create(extractor, uri):
     new_extractor = extractor(uri=uri)
     assert new_extractor.uri
 
 
-@parametrize('extractor, uri', mock_params)
+@parametrize("extractor, uri", mock_params)
 def test_extract(extractor, uri):
     new_extractor = extractor(uri=uri)
     assert new_extractor.extract()

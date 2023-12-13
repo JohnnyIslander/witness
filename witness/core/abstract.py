@@ -13,6 +13,7 @@
 #     limitations under the License.
 
 import logging
+import os
 from abc import ABCMeta, abstractmethod
 from typing import Optional
 import pendulum
@@ -21,6 +22,9 @@ log = logging.getLogger(__name__)
 
 
 class AbstractBatch(metaclass=ABCMeta):
+
+    data: list
+    meta: Optional
 
     @abstractmethod
     def fill(self, extractor):
@@ -31,26 +35,33 @@ class AbstractBatch(metaclass=ABCMeta):
         raise NotImplemented
 
     @abstractmethod
-    def dump(self, uri):
+    def dump(self, uri: str):
         raise NotImplemented
 
     @abstractmethod
-    def restore(self, uri):
+    def restore(self, uri: str):
         raise NotImplemented
 
 
 class AbstractExtractor(metaclass=ABCMeta):
 
-    def __init__(self, uri=None):
+    def __init__(self, uri: Optional[str] = None, **kwargs):
 
-        self.uri = uri
+        self.uri: Optional[str] = uri
         self.output = None
         self.extraction_timestamp: Optional[pendulum.DateTime] = None
+        self.record_source: Optional[str] = None
         self.serializer: Optional[AbstractSerializer] = None
         self.is_unified = False
+        self.short_rs = False
 
     def set_extraction_timestamp(self):
         setattr(self, 'extraction_timestamp', pendulum.now())
+
+    def set_record_source(self, record_source: Optional[str] = None, shorten=False):
+        if record_source is None:
+            record_source = os.path.split(self.uri)[1] if shorten else self.uri
+        setattr(self, 'record_source', record_source)
 
     def _set_unified_true(self):
         setattr(self, 'is_unified', True)
@@ -60,7 +71,9 @@ class AbstractExtractor(metaclass=ABCMeta):
         """
         An abstract method for data extraction.
         """
-        raise NotImplementedError
+        self.set_extraction_timestamp()
+        self.set_record_source()
+        return self
 
     @abstractmethod
     def unify(self):
@@ -72,16 +85,16 @@ class AbstractExtractor(metaclass=ABCMeta):
 
 class AbstractLoader(metaclass=ABCMeta):
 
-    def __init__(self, uri=None):
+    def __init__(self, uri: Optional[str] = None):
 
-        self.uri = uri
+        self.uri: Optional[str] = uri
         self.batch = None
         self.meta_to_attach: Optional[dict] = None
         self.output = None
         self.serializer: Optional[AbstractSerializer] = None
 
     @abstractmethod
-    def prepare(self, batch):
+    def prepare(self, batch: AbstractBatch):
         """
         An abstract method of preparing data from a Batch object for loading.
         """
@@ -102,7 +115,7 @@ class AbstractLoader(metaclass=ABCMeta):
         """
         raise NotImplementedError
 
-    def _set_batch(self, batch):
+    def _set_batch(self, batch: AbstractBatch):
         setattr(self, 'batch', batch)
 
     def _set_meta_to_attach(self, meta_elements):
@@ -122,7 +135,7 @@ class AbstractLoader(metaclass=ABCMeta):
 
 class AbstractSerializer(metaclass=ABCMeta):
 
-    def to_batch(self, raw, *args, **kwargs):
+    def to_batch(self, raw, *args, **kwargs) -> AbstractBatch:
         """
         An abstract method for serializing extracted data to unified batch format.
         """

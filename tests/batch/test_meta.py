@@ -38,13 +38,14 @@ def test_meta_json_dump(fxtr_batch):
 
 
 def test_meta_update(fxtr_batch):
-    new_attr_dict = {'record_source': '/random/source', 'extra': 1}
+    new_attr_dict = {"record_source": "/random/source", "extra": 1}
     meta = fxtr_batch.meta
     meta.update(new_attr_dict)
-    assert meta.record_source == '/random/source'
+    assert meta.record_source == "/random/source"
     assert meta.extra == 1
-    new_attr_meta = MetaData(record_source='https://www.example.com/random/source', extra=2)
+    new_attr_meta = MetaData(
+        record_source="https://www.example.com/random/source", extra=2
+    )
     meta.update(new_attr_meta)
-    assert meta.record_source == 'https://www.example.com/random/source'
+    assert meta.record_source == "https://www.example.com/random/source"
     assert meta.extra == 2
-

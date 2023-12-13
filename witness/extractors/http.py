@@ -1,6 +1,6 @@
 
 from witness.core.abstract import AbstractExtractor, AbstractSerializer
-from witness.serializers.http import JsonSerializer
+from witness.serializers.common import JsonSerializer
 import requests
 from requests.auth import AuthBase
 from typing import Optional

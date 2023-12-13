@@ -12,22 +12,23 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
 
-from os import path, getcwd
-import pytest
+from witness import Batch, MetaData
+from tests import conftest
 
-# pytest decorators shortcuts
-xfail = pytest.mark.xfail
-parametrize = pytest.mark.parametrize
-
-# mock resources shortcuts
-
-proj_dir_uri = './'
-proj_dir_path = path.abspath(proj_dir_uri)
-
-while "tests" in proj_dir_path:
-    proj_dir_uri = '../' + proj_dir_uri
-    proj_dir_path = path.abspath(proj_dir_uri)
+calibration_meta = conftest.batch_meta
+calibration_data = conftest.batch_data
 
 
-temp_dir = path.abspath(f"{proj_dir_uri}/temp")
-files_dir = path.abspath(f"{proj_dir_uri}/temp/files")
+def test_info_full_empty():
+    batch = Batch()
+    assert batch.info() == "Batch object does not contain any data or meta."
+    print(batch.info())
+
+
+def test_info(fxtr_batch):
+    fxtr_batch.info(print_output=True)
+
+
+def test_auto_creating_meta():
+    batch = Batch(calibration_data)
+    assert isinstance(batch.meta, MetaData)

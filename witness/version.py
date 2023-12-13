@@ -24,7 +24,7 @@ try:
     version = metadata.version('witness-etl')
 except metadata.PackageNotFoundError:
     import logging
-    version = '0.0.7'
+    version = '0.0.8'
 
 
 del metadata
