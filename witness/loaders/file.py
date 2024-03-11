@@ -36,7 +36,7 @@ class JSONFileLoader(AbstractLoader):
     def load(self):
         raise NotImplemented
 
-
+ 
 class CSVFileLoader(AbstractLoader):
 
     def __init__(self,
@@ -75,3 +75,4 @@ class CSVFileLoader(AbstractLoader):
             writer.writerows(self.output)
 
         return self
+
