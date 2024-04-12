@@ -45,7 +45,7 @@ class PandasSerializer(AbstractSerializer):
         else:
             raise ValueError("Unknown datastructure passed.")
 
-    def from_batch(self, data, *args, dtype="str", **kwargs):
+    def from_batch(self, data, *args, dtype: str = "str", **kwargs):
         df = pd.DataFrame(data, dtype=dtype)
         return df
 
@@ -57,9 +57,9 @@ class PandasLoader(AbstractLoader):
         super().__init__(uri)
         self.serializer = serializer
 
-    def prepare(self, batch):
+    def prepare(self, batch, *args, dtype: str = "str", **kwargs):
         super().prepare(batch)
-        df = self.serializer.from_batch(batch.data)
+        df = self.serializer.from_batch(batch.data, dtype=dtype)
         self.output = df
         return self
 
