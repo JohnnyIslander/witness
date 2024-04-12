@@ -14,7 +14,7 @@
 
 import pandas as pd
 import logging
-
+from typing import Optional, Union
 from witness.providers.pandas.core import PandasExtractor
 
 log = logging.getLogger(__name__)
@@ -39,6 +39,44 @@ class PandasExcelExtractor(PandasExtractor):
     def extract(self):
         df = pd.read_excel(
             self.uri, sheet_name=self.sheet_name, header=self.header, dtype=self.dtype
+        )
+        setattr(self, "output", df)
+        super().extract()
+
+        return self
+
+
+class PandasSQLExtractor(PandasExtractor):
+    def __init__(self,
+                 engine,
+                 query: str,
+                 index_col: Optional[str] = None,
+                 params: Optional[dict] = None,
+                 table: Optional[str] = None,
+                 schema: Optional[str] = None,
+                 columns: Optional[list] = None,
+                 dtype: Union[str, dict, None] = None
+                 ):
+        self.engine = engine
+        self.query = query if query else table if table else 'select null'
+        self.index_col = index_col
+        self.params = params
+        self.schema = schema
+        self.table = table if self.schema is None else f'{self.schema}.{table}'
+        self.columns = columns
+        self.dtype = dtype
+        uri = f"{engine.url.database}.{schema}.{table}"
+        super().__init__(uri)
+
+    def extract(self):
+        conn = self.engine.connect()
+        df = pd.read_sql(
+            sql=self.query,
+            con=conn,
+            index_col=self.index_col,
+            params=self.params,
+            columns=self.columns,
+            # dtype=self.dtype only in pandas >= 2.0
         )
         setattr(self, "output", df)
         super().extract()
