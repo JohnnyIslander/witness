@@ -12,19 +12,42 @@
 #     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
-from datetime import datetime
 
+import csv
 from witness.core.abstract import AbstractExtractor
 
 
 class FileExtractor(AbstractExtractor):
 
-    def _set_extraction_timestamp(self):
-        setattr(self, 'extraction_timestamp', datetime.now())
-
     def extract(self):
-        self._set_extraction_timestamp()
+        self.set_extraction_timestamp()
 
     def unify(self):
         raise NotImplementedError
+
+
+class CSVFileExtractor(FileExtractor):
+
+    def __init__(self, uri: str, delimiter=',', quotechar='"'):
+        super().__init__()
+        self.uri = uri
+        self.delimiter = delimiter
+        self.quotechar = quotechar
+
+    def extract(self):
+        with open(self.uri, 'r', encoding='utf-8') as file:
+            reader = csv.DictReader(file, delimiter=self.delimiter, quotechar=self.quotechar)
+            data = [row for row in reader]
+            setattr(self, 'output', data)
+        super().extract()
+        return self
+
+    def unify(self):
+        data = self.output
+        meta = {'extraction_timestamp': self.extraction_timestamp,
+                'record_source': self.uri}
+
+        setattr(self, 'output', {'meta': meta, 'data': data})
+
+        return self
 

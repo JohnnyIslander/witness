@@ -1,4 +1,5 @@
-#  Copyright (c) 2022.  Eugene Popov.
+
+#  Copyright (c) 2023.  Eugene Popov.
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #     you may not use this file except in compliance with the License.
@@ -12,22 +13,26 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
 
-from os import path, getcwd
-import pytest
 
-# pytest decorators shortcuts
-xfail = pytest.mark.xfail
-parametrize = pytest.mark.parametrize
-
-# mock resources shortcuts
-
-proj_dir_uri = './'
-proj_dir_path = path.abspath(proj_dir_uri)
-
-while "tests" in proj_dir_path:
-    proj_dir_uri = '../' + proj_dir_uri
-    proj_dir_path = path.abspath(proj_dir_uri)
+from witness.core.abstract import AbstractSerializer
+import json
+import datetime
 
 
-temp_dir = path.abspath(f"{proj_dir_uri}/temp")
-files_dir = path.abspath(f"{proj_dir_uri}/temp/files")
+class CustomJSONEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, datetime.datetime):
+            return o.isoformat()
+        return super().default(o)
+
+
+class JsonSerializer(AbstractSerializer):
+
+    def to_batch(self, raw, *args, **kwargs):
+        data = raw.json()
+        return data
+
+    def from_batch(self, data, *args, **kwargs):
+        raw = json.dumps(data, cls=CustomJSONEncoder)
+        return raw
+
