@@ -14,6 +14,7 @@
 
 
 from witness.providers.pandas.core import PandasLoader
+from typing import Optional, Union
 import pandas as pd
 
 
@@ -26,13 +27,18 @@ class PandasSQLLoader(PandasLoader):
     :param schema: name of the destination schema, None if not defined.
     """
 
-    def __init__(
-        self, engine, table: str, schema: str or None = None, method: str or None = None
-    ):
+    def __init__(self,
+                 engine,
+                 table: str,
+                 schema: Optional[str] = None,
+                 method: Optional[str] = None,
+                 dtype: Union[str, dict, None] = None
+                 ):
         self.engine = engine
         self.schema = schema
         self.table = table
         self.method = method
+        self.dtype = dtype
         uri = f"{schema}.{table}"
         super().__init__(uri)
 
@@ -43,6 +49,7 @@ class PandasSQLLoader(PandasLoader):
             schema=self.schema,
             if_exists="append",
             method=self.method,
+            dtype=self.dtype
         )
         return self
 
